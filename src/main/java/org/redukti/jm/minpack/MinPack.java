@@ -671,12 +671,94 @@ public class MinPack {
         }
     }
 
-
+    /**
+     * subroutine lmpar
+     * <p>
+     * given an m by n matrix a, an n by n nonsingular diagonal
+     * matrix d, an m-vector b, and a positive number delta,
+     * the problem is to determine a value for the parameter
+     * par such that if x solves the system
+     * <pre>
+     * a*x = b ,     sqrt(par)*d*x = 0 ,
+     * </pre>
+     * in the least squares sense, and dxnorm is the euclidean
+     * norm of d*x, then either par is zero and
+     * <pre>
+     * (dxnorm-delta) .le. 0.1*delta ,
+     * </pre>
+     * or par is positive and
+     * <pre>
+     * abs(dxnorm-delta) .le. 0.1*delta .
+     * </pre>
+     * this subroutine completes the solution of the problem
+     * if it is provided with the necessary information from the
+     * qr factorization, with column pivoting, of a. that is, if
+     * a*p = q*r, where p is a permutation matrix, q has orthogonal
+     * columns, and r is an upper triangular matrix with diagonal
+     * elements of nonincreasing magnitude, then lmpar expects
+     * the full upper triangle of r, the permutation matrix p,
+     * and the first n components of (q transpose)*b. on output
+     * lmpar also provides an upper triangular matrix s such that
+     * <pre>
+     * t   t                   t
+     * p *(a *a + par*d*d)*p = s *s .
+     * </pre>
+     * s is employed within lmpar and may be of separate interest.
+     * <p>
+     * only a few iterations are generally needed for convergence
+     * of the algorithm. if, however, the limit of 10 iterations
+     * is reached, then the output par will contain the best
+     * value obtained so far.
+     * <p>
+     * the subroutine statement is
+     * <p>
+     * subroutine lmpar(n,r,ldr,ipvt,diag,qtb,delta,par,x,sdiag,
+     * wa1,wa2)
+     * <p>
+     * where
+     *
+     * @param n     is a positive integer input variable set to the order of r.
+     * @param r     is an n by n array. on input the full upper triangle
+     *              must contain the full upper triangle of the matrix r.
+     *              on output the full upper triangle is unaltered, and the
+     *              strict lower triangle contains the strict upper triangle
+     *              (transposed) of the upper triangular matrix s.
+     * @param ldr   is a positive integer input variable not less than n
+     *              which specifies the leading dimension of the array r.
+     * @param ipvt  is an integer input array of length n which defines the
+     *              permutation matrix p such that a*p = q*r. column j of p
+     *              is column ipvt(j) of the identity matrix.
+     * @param diag  is an input array of length n which must contain the
+     *              diagonal elements of the matrix d.
+     * @param qtb   is an input array of length n which must contain the first
+     *              n elements of the vector (q transpose)*b.
+     * @param delta is a positive input variable which specifies an upper
+     *              bound on the euclidean norm of d*x.
+     * @param par   is a nonnegative variable. on input par contains an
+     *              initial estimate of the levenberg-marquardt parameter.
+     *              on output par contains the final estimate.
+     * @param x     is an output array of length n which contains the least
+     *              squares solution of the system a*x = b, sqrt(par)*d*x = 0,
+     *              for the output par.
+     * @param sdiag is an output array of length n which contains the
+     *              diagonal elements of the upper triangular matrix s.
+     * @param wa1   and wa2 are work arrays of length n.
+     *              <p>
+     *              subprograms called
+     *              <p>
+     *              minpack-supplied ... dpmpar,enorm,qrsolv
+     *              <p>
+     *              fortran-supplied ... dabs,dmax1,dmin1,dsqrt
+     *              <p>
+     *              argonne national laboratory. minpack project. march 1980.
+     *              burton s. garbow, kenneth e. hillstrom, jorge j. more
+     *              <p>
+     *              *********
+     */
     public static void lmpar(int n, double[] r, int ldr,
-	    int[] ipvt, double[] diag, double[] qtb, double delta,
-        double[] par, double[] x, double[] sdiag, double[] wa1,
-        double[] wa2)
-    {
+                             int[] ipvt, double[] diag, double[] qtb, double delta,
+                             double[] par, double[] x, double[] sdiag, double[] wa1,
+                             double[] wa2) {
         /* Initialized data */
 
         final double p1 = .1;
@@ -695,107 +777,12 @@ public class MinPack {
         double gnorm;
         double dxnorm;
 
-        /*     ********** */
-
-        /*     subroutine lmpar */
-
-        /*     given an m by n matrix a, an n by n nonsingular diagonal */
-        /*     matrix d, an m-vector b, and a positive number delta, */
-        /*     the problem is to determine a value for the parameter */
-        /*     par such that if x solves the system */
-
-        /*           a*x = b ,     sqrt(par)*d*x = 0 , */
-
-        /*     in the least squares sense, and dxnorm is the euclidean */
-        /*     norm of d*x, then either par is zero and */
-
-        /*           (dxnorm-delta) .le. 0.1*delta , */
-
-        /*     or par is positive and */
-
-        /*           abs(dxnorm-delta) .le. 0.1*delta . */
-
-        /*     this subroutine completes the solution of the problem */
-        /*     if it is provided with the necessary information from the */
-        /*     qr factorization, with column pivoting, of a. that is, if */
-        /*     a*p = q*r, where p is a permutation matrix, q has orthogonal */
-        /*     columns, and r is an upper triangular matrix with diagonal */
-        /*     elements of nonincreasing magnitude, then lmpar expects */
-        /*     the full upper triangle of r, the permutation matrix p, */
-        /*     and the first n components of (q transpose)*b. on output */
-        /*     lmpar also provides an upper triangular matrix s such that */
-
-        /*            t   t                   t */
-        /*           p *(a *a + par*d*d)*p = s *s . */
-
-        /*     s is employed within lmpar and may be of separate interest. */
-
-        /*     only a few iterations are generally needed for convergence */
-        /*     of the algorithm. if, however, the limit of 10 iterations */
-        /*     is reached, then the output par will contain the best */
-        /*     value obtained so far. */
-
-        /*     the subroutine statement is */
-
-        /*       subroutine lmpar(n,r,ldr,ipvt,diag,qtb,delta,par,x,sdiag, */
-        /*                        wa1,wa2) */
-
-        /*     where */
-
-        /*       n is a positive integer input variable set to the order of r. */
-
-        /*       r is an n by n array. on input the full upper triangle */
-        /*         must contain the full upper triangle of the matrix r. */
-        /*         on output the full upper triangle is unaltered, and the */
-        /*         strict lower triangle contains the strict upper triangle */
-        /*         (transposed) of the upper triangular matrix s. */
-
-        /*       ldr is a positive integer input variable not less than n */
-        /*         which specifies the leading dimension of the array r. */
-
-        /*       ipvt is an integer input array of length n which defines the */
-        /*         permutation matrix p such that a*p = q*r. column j of p */
-        /*         is column ipvt(j) of the identity matrix. */
-
-        /*       diag is an input array of length n which must contain the */
-        /*         diagonal elements of the matrix d. */
-
-        /*       qtb is an input array of length n which must contain the first */
-        /*         n elements of the vector (q transpose)*b. */
-
-        /*       delta is a positive input variable which specifies an upper */
-        /*         bound on the euclidean norm of d*x. */
-
-        /*       par is a nonnegative variable. on input par contains an */
-        /*         initial estimate of the levenberg-marquardt parameter. */
-        /*         on output par contains the final estimate. */
-
-        /*       x is an output array of length n which contains the least */
-        /*         squares solution of the system a*x = b, sqrt(par)*d*x = 0, */
-        /*         for the output par. */
-
-        /*       sdiag is an output array of length n which contains the */
-        /*         diagonal elements of the upper triangular matrix s. */
-
-        /*       wa1 and wa2 are work arrays of length n. */
-
-        /*     subprograms called */
-
-        /*       minpack-supplied ... dpmpar,enorm,qrsolv */
-
-        /*       fortran-supplied ... dabs,dmax1,dmin1,dsqrt */
-
-        /*     argonne national laboratory. minpack project. march 1980. */
-        /*     burton s. garbow, kenneth e. hillstrom, jorge j. more */
-
-        /*     ********** */
-
-        /*     dwarf is the smallest positive magnitude. */
+        /* dwarf is the smallest positive magnitude. */
 
         dwarf = dpmpar(2);
 
-        /*     compute and store in x the gauss-newton direction. if the */
-        /*     jacobian is rank-deficient, obtain a least squares solution. */
+        /* compute and store in x the gauss-newton direction. if the */
+        /* jacobian is rank-deficient, obtain a least squares solution. */
 
         nsing = n;
         for (j = 0; j < n; ++j) {
@@ -822,13 +809,13 @@ public class MinPack {
             }
         }
         for (j = 0; j < n; ++j) {
-            l = ipvt[j]-1;
+            l = ipvt[j] - 1;
             x[l] = wa1[j];
         }
 
-        /*     initialize the iteration counter. */
-        /*     evaluate the function at the origin, and test */
-        /*     for acceptance of the gauss-newton direction. */
+        /* initialize the iteration counter. */
+        /* evaluate the function at the origin, and test */
+        /* for acceptance of the gauss-newton direction. */
 
         iter = 0;
         for (j = 0; j < n; ++j) {
@@ -843,9 +830,9 @@ public class MinPack {
                 throw new RuntimeException(); // goto terminate
             }
 
-            /*     if the jacobian is not rank deficient, the newton */
-            /*     step provides a lower bound, parl, for the zero of */
-            /*     the function. otherwise set this bound to zero. */
+            /* if the jacobian is not rank deficient, the newton */
+            /* step provides a lower bound, parl, for the zero of */
+            /* the function. otherwise set this bound to zero. */
 
             parl = 0.;
             if (nsing >= n) {
@@ -867,7 +854,7 @@ public class MinPack {
                 parl = fp / delta / temp / temp;
             }
 
-            /*     calculate an upper bound, paru, for the zero of the function. */
+            /* calculate an upper bound, paru, for the zero of the function. */
 
             for (j = 0; j < n; ++j) {
                 double sum;
@@ -885,8 +872,8 @@ public class MinPack {
                 paru = dwarf / Math.min(delta, p1) /* / p001 ??? */;
             }
 
-            /*     if the input par lies outside of the interval (parl,paru), */
-            /*     set par to the closer endpoint. */
+            /* if the input par lies outside of the interval (parl,paru), */
+            /* set par to the closer endpoint. */
 
             par[0] = Math.max(par[0], parl);
             par[0] = Math.min(par[0], paru);
@@ -894,12 +881,12 @@ public class MinPack {
                 par[0] = gnorm / dxnorm;
             }
 
-            /*     beginning of an iteration. */
+            /* beginning of an iteration. */
 
             for (; ; ) {
                 ++iter;
 
-                /*        evaluate the function at the current value of par. */
+                /* evaluate the function at the current value of par. */
 
                 if (par[0] == 0.) {
                     /* Computing MAX */
@@ -919,15 +906,15 @@ public class MinPack {
                 temp = fp;
                 fp = dxnorm - delta;
 
-                /*        if the function is small enough, accept the current value */
-                /*        of par. also test for the exceptional cases where parl */
-                /*        is zero or the number of iterations has reached 10. */
+                /* if the function is small enough, accept the current value */
+                /* of par. also test for the exceptional cases where parl */
+                /* is zero or the number of iterations has reached 10. */
 
                 if (Math.abs(fp) <= p1 * delta || (parl == 0. && fp <= temp && temp < 0.) || iter == 10) {
                     throw new RuntimeException(); // goto terminate
                 }
 
-                /*        compute the newton correction. */
+                /* compute the newton correction. */
 
                 for (j = 0; j < n; ++j) {
                     l = ipvt[j] - 1;
@@ -946,7 +933,7 @@ public class MinPack {
                 temp = enorm(n, 0, wa1);
                 parc = fp / delta / temp / temp;
 
-                /*        depending on the sign of the function, update parl or paru. */
+                /* depending on the sign of the function, update parl or paru. */
 
                 if (fp > 0.) {
                     parl = Math.max(parl, par[0]);
@@ -955,30 +942,25 @@ public class MinPack {
                     paru = Math.min(paru, par[0]);
                 }
 
-                /*        compute an improved estimate for par. */
+                /* compute an improved estimate for par. */
 
                 /* Computing MAX */
                 d1 = parl;
                 d2 = par[0] + parc;
                 par[0] = Math.max(d1, d2);
 
-                /*        end of an iteration. */
-
+                /* end of an iteration. */
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // :TERMINATE
         }
 
-        /*     termination. */
+        /* termination. */
 
         if (iter == 0) {
-	        par[0] = 0.;
+            par[0] = 0.;
         }
-
-        /*     last card of subroutine lmpar. */
-
-    } /* lmpar_ */
+    }
 
     public interface Fcnder {
         /* for lmder1 and lmder */
