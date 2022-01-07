@@ -208,62 +208,59 @@ public class MinPack {
     static final double rgiant = 1.34078079299426e+153;
     static final double rdwarf = 1.82691291192569e-153;
 
-    public static double enorm(int n, int start, double[] x)
-    {
+    /**
+     * function enorm
+     * <p>
+     * given an n-vector x, this function calculates the
+     * euclidean norm of x.
+     * <p>
+     * the euclidean norm is computed by accumulating the sum of
+     * squares in three different sums. the sums of squares for the
+     * small and large components are scaled so that no overflows
+     * occur. non-destructive underflows are permitted. underflows
+     * and overflows do not occur in the computation of the unscaled
+     * sum of squares for the intermediate components.
+     * the definitions of small, intermediate and large components
+     * depend on two constants, rdwarf and rgiant. the main
+     * restrictions on these constants are that rdwarf**2 not
+     * underflow and rgiant**2 not overflow. the constants
+     * given here are suitable for every known computer.
+     * <p>
+     * the function statement is
+     * <p>
+     * double precision function enorm(n,x)
+     * <p>
+     * where
+     *
+     * @param n is a positive integer input variable.
+     * @param x is an input array of length n.
+     *          <p>
+     *          subprograms called
+     *          <p>
+     *          fortran-supplied ... dabs,dsqrt
+     *          <p>
+     *          argonne national laboratory. minpack project. march 1980.
+     *          burton s. garbow, kenneth e. hillstrom, jorge j. more
+     *          <p>
+     *          *********
+     */
+    public static double enorm(int n, int start, double[] x) {
         /* System generated locals */
         double ret_val, d1;
 
         /* Local variables */
         double s1, s2, s3, xabs, x1max, x3max, agiant;
 
-        /*     ********** */
-
-        /*     function enorm */
-
-        /*     given an n-vector x, this function calculates the */
-        /*     euclidean norm of x. */
-
-        /*     the euclidean norm is computed by accumulating the sum of */
-        /*     squares in three different sums. the sums of squares for the */
-        /*     small and large components are scaled so that no overflows */
-        /*     occur. non-destructive underflows are permitted. underflows */
-        /*     and overflows do not occur in the computation of the unscaled */
-        /*     sum of squares for the intermediate components. */
-        /*     the definitions of small, intermediate and large components */
-        /*     depend on two constants, rdwarf and rgiant. the main */
-        /*     restrictions on these constants are that rdwarf**2 not */
-        /*     underflow and rgiant**2 not overflow. the constants */
-        /*     given here are suitable for every known computer. */
-
-        /*     the function statement is */
-
-        /*       double precision function enorm(n,x) */
-
-        /*     where */
-
-        /*       n is a positive integer input variable. */
-
-        /*       x is an input array of length n. */
-
-        /*     subprograms called */
-
-        /*       fortran-supplied ... dabs,dsqrt */
-
-        /*     argonne national laboratory. minpack project. march 1980. */
-        /*     burton s. garbow, kenneth e. hillstrom, jorge j. more */
-
-        /*     ********** */
-
         s1 = 0.;
         s2 = 0.;
         s3 = 0.;
         x1max = 0.;
         x3max = 0.;
-        agiant = rgiant / (double)n;
-        for (int i = start; i < n+start; ++i) {
+        agiant = rgiant / (double) n;
+        for (int i = start; i < n + start; ++i) {
             xabs = Math.abs(x[i]);
             if (xabs >= agiant) {
-                /*              sum for large components. */
+                /* sum for large components. */
                 if (xabs > x1max) {
                     /* Computing 2nd power */
                     d1 = x1max / xabs;
@@ -275,7 +272,7 @@ public class MinPack {
                     s1 += d1 * d1;
                 }
             } else if (xabs <= rdwarf) {
-                /*              sum for small components. */
+                /* sum for small components. */
                 if (xabs > x3max) {
                     /* Computing 2nd power */
                     d1 = x3max / xabs;
@@ -287,13 +284,13 @@ public class MinPack {
                     s3 += d1 * d1;
                 }
             } else {
-                /*           sum for intermediate components. */
+                /* sum for intermediate components. */
                 /* Computing 2nd power */
                 s2 += xabs * xabs;
             }
         }
 
-        /*     calculation of norm. */
+        /* calculation of norm. */
 
         if (s1 != 0.) {
             ret_val = x1max * Math.sqrt(s1 + (s2 / x1max) / x1max);
@@ -307,8 +304,6 @@ public class MinPack {
             ret_val = x3max * Math.sqrt(s3);
         }
         return ret_val;
-
-        /*     last card of function enorm. */
     }
 
     public static void qrfac(int m, int n, double[] a, int
