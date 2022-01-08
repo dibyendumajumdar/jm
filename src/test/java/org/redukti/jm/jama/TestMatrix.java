@@ -1,4 +1,4 @@
-package org.redukti.jama;
+package org.redukti.jm.jama;
 import org.junit.Test;
 import org.redukti.jm.jama.*;
 import java.io.*;
