@@ -2,7 +2,6 @@ package org.redukti.jm.minpack;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.redukti.jm.jama.Matrix;
 
 public class TestHybrd implements MinPack.Hybrd_Function {
 
