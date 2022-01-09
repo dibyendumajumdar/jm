@@ -2223,7 +2223,7 @@ public class MinPack {
         for (j = 0; j < n; j++) {
             temp = qtb[j];
             for (i = j; i < n; i++) {
-                wa1[i - 1] = wa1[i - 1] + r[l - 1] * temp;
+                wa1[i] = wa1[i] + r[l] * temp;
                 l = l + 1;
             }
             wa1[j] = wa1[j] / diag[j];
@@ -2853,7 +2853,6 @@ public class MinPack {
             }
             /*        copy the triangular factor of the qr factorization into r. */
 
-            // FIXME l is 1 based
             for (j = 1; j <= n; j++) {
                 l = j;
                 for (i = 1; i <= j - 1; i++) {
@@ -2862,7 +2861,7 @@ public class MinPack {
                 }
                 r[l - 1] = wa1[j - 1];
                 if (wa1[j - 1] == 0.0) {
-                    System.err.println("  Matrix is singular.");
+                    //System.err.println("  Matrix is singular.");
                 }
             }
 
@@ -3081,6 +3080,77 @@ public class MinPack {
 //
 //        /*     last card of subroutine hybrd. */
     }
+
+    public static int hybrd1 (Hybrd_Function fcn, int n,
+        double x[], double fvec[], double tol, double wa[], int lwa )
+    {
+        double epsfcn;
+        double factor;
+        int index;
+        int info;
+        int j;
+        int lr;
+        int maxfev;
+        int ml;
+        int mode;
+        int mu;
+        int[] nfev = new int[1];
+        int nprint;
+        double xtol;
+
+        info = 0;
+/*
+  Check the input.
+*/
+        if ( n <= 0 )
+        {
+            return info;
+        }
+        if ( tol <= 0.0 )
+        {
+            return info;
+        }
+        if ( lwa < ( n * ( 3 * n + 13 ) ) / 2 )
+        {
+            return info;
+        }
+/*
+  Call HYBRD.
+*/
+        xtol = tol;
+        maxfev = 200 * ( n + 1 );
+        ml = n - 1;
+        mu = n - 1;
+        epsfcn = 0.0;
+        for ( j = 0; j < n; j++ )
+        {
+            wa[j] = 1.0;
+        }
+        mode = 2;
+        factor = 100.0;
+        nprint = 0;
+        nfev[0] = 0;
+        lr = ( n * ( n + 1 ) ) / 2;
+        index = 6 * n + lr;
+
+        double[] fjac = new double[n*n];
+        double[] r = new double[lr];
+        double[] qtf = new double[n];
+        double[] wa1 = new double[n];
+        double[] wa2 = new double[n];
+        double[] wa3 = new double[n];
+        double[] wa4 = new double[n];
+        info = hybrd ( fcn, n, x, fvec, xtol, maxfev, ml, mu, epsfcn, wa, mode,
+                factor, nprint, nfev, fjac, n, r, lr,
+                qtf, wa1, wa2, wa3, wa4 );
+
+        if ( info == 5 )
+        {
+            info = 4;
+        }
+        return info;
+    }
+
 
     /**
      * subroutine chkder
