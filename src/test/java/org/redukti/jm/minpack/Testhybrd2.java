@@ -645,6 +645,70 @@ C     BURTON S. GARBOW, KENNETH E. HILLSTROM, JORGE J. MORE
 
             }
 
+            case 10: {
+
+// DISCRETE INTEGRAL EQUATION FUNCTION.
+
+                double h = one/(double)(n+1);
+                for (k = 1; k <= n; k++) {
+                    double tk = (double)(k)*h;
+                    double sum1 = zero;
+                    for (j = 1; j<= k; j++) {
+                        double tj = (double)(j)*h;
+                        double t = x[j-1] + tj + one;
+                        double temp = t*t*t;
+                        sum1 = sum1 + tj*temp;
+                    }
+                    double sum2 = zero;
+                    kp1 = k + 1;
+                    if (n >= kp1) {
+                        for (j = kp1; j <= n; j++) {
+                            double tj = (double)(j)*h;
+                            double t = x[j-1] + tj + one;
+                            double temp = t*t*t;
+                            sum2 = sum2 + (one - tj)*temp;
+                        }
+                    }
+                    fvec[k-1] = x[k-1] + h*((one - tk)*sum1 + tk*sum2)/two;
+                }
+
+                return;
+
+            }
+
+            case 11: {
+
+// TRIGONOMETRIC FUNCTION.
+
+                double sum = zero;
+                for (j = 1; j <= n; j++) {
+                    fvec[j-1] = Math.cos(x[j-1]);
+                    sum = sum + fvec[j-1];
+                }
+                for (k = 1; k <= n; k++) {
+                    fvec[k-1] = (double)(n+k) - Math.sin(x[k-1]) - sum - (double)(k)*fvec[k-1];
+                }
+
+                return;
+            }
+
+            case 12: {
+
+// VARIABLY DIMENSIONED FUNCTION.
+
+                double sum = zero;
+                for (j = 1; j <= n; j++) {
+                    sum = sum + (double)(j)*(x[j-1] - one);
+                }
+                double temp = sum*(one + two*sum*sum);
+                for (k = 1; k <= n; k++) {
+                    fvec[k-1] = x[k-1] - one + (double)(k)*temp;
+                }
+
+                return;
+            }
+
+
         }
 
     }
