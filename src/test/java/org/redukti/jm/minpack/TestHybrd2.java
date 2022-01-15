@@ -106,12 +106,13 @@ C     BURTON S. GARBOW, KENNETH E. HILLSTROM, JORGE J. MORE
             WA = new double[2660],
             X = new double[40];
 
-        TOL = Math.sqrt(MinPack.dpmpar(1));
+        TOL = StrictMath.sqrt(MinPack.dpmpar(1));
         LWA = 2660;
         IC = 0;
 
         for (TestProblem p: problems) {
             FACTOR = one;
+            this.nprob = p.nprob;
             for (K = 1; K <= p.ntries; K++) {
                 IC = IC + 1;
                 initpt(p.n,X,p.nprob,FACTOR);
@@ -227,9 +228,9 @@ C     BURTON S. GARBOW, KENNETH E. HILLSTROM, JORGE J. MORE
 // POWELL SINGULAR FUNCTION.
 
                 fvec[0] = x[0] + ten*x[1];
-                fvec[1] = Math.sqrt(five)*(x[2] - x[3]);
+                fvec[1] = StrictMath.sqrt(five)*(x[2] - x[3]);
                 fvec[2] = (x[1] - two*x[2])*(x[1] - two*x[2]);
-                fvec[3] = Math.sqrt(ten)*(x[0] - x[3])*(x[0] - x[3]);
+                fvec[3] = StrictMath.sqrt(ten)*(x[0] - x[3])*(x[0] - x[3]);
 
                 return;
 
@@ -238,7 +239,7 @@ C     BURTON S. GARBOW, KENNETH E. HILLSTROM, JORGE J. MORE
 // POWELL BADLY SCALED FUNCTION.
 
                 fvec[0] = c1*x[0]*x[1] - one;
-                fvec[1] = Math.exp(-x[0]) + Math.exp(-x[1]) - c2;
+                fvec[1] = StrictMath.exp(-x[0]) + StrictMath.exp(-x[1]) - c2;
 
                 return;
 
@@ -261,16 +262,16 @@ C     BURTON S. GARBOW, KENNETH E. HILLSTROM, JORGE J. MORE
 
 // HELICAL VALLEY FUNCTION.
 
-                double tpi = eight * Math.atan(one);
+                double tpi = eight * StrictMath.atan(one);
                 double temp1;
                 if (x[1] < 0.0) {
                     temp1 = -c7;
                 } else {
                     temp1 = c7;
                 }
-                if (x[0] > zero) temp1 = Math.atan(x[1] / x[0]) / tpi;
-                if (x[0] < zero) temp1 = Math.atan(x[1] / x[0]) / tpi + c8;
-                double temp2 = Math.sqrt(x[0] * x[0] + x[1] * x[1]);
+                if (x[0] > zero) temp1 = StrictMath.atan(x[1] / x[0]) / tpi;
+                if (x[0] < zero) temp1 = StrictMath.atan(x[1] / x[0]) / tpi + c8;
+                double temp2 = StrictMath.sqrt(x[0] * x[0] + x[1] * x[1]);
                 fvec[0] = ten * (x[2] - ten * temp1);
                 fvec[1] = ten * (temp2 - one);
                 fvec[2] = x[2];
@@ -437,11 +438,11 @@ C     BURTON S. GARBOW, KENNETH E. HILLSTROM, JORGE J. MORE
 
                 double sum = zero;
                 for (j = 1; j <= n; j++) {
-                    fvec[j-1] = Math.cos(x[j-1]);
+                    fvec[j-1] = StrictMath.cos(x[j-1]);
                     sum = sum + fvec[j-1];
                 }
                 for (k = 1; k <= n; k++) {
-                    fvec[k-1] = (double)(n+k) - Math.sin(x[k-1]) - sum - (double)(k)*fvec[k-1];
+                    fvec[k-1] = (double)(n+k) - StrictMath.sin(x[k-1]) - sum - (double)(k)*fvec[k-1];
                 }
 
                 return;

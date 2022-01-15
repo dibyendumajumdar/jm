@@ -167,7 +167,8 @@ public class MinPack {
         switch(i) {
             case 1:
                 //return DPMPAR(realm,EPSILON); /* 2.2204460492503131e-16 | 1.19209290e-07F */
-                return 2.2204460492503131e-16;
+                //return 2.2204460492503131e-16;
+                return 2.22044604926e-16;
             case 2:
                 //return DPMPAR(realm,MIN);    /* 2.2250738585072014e-308 | 1.17549435e-38F */
                 return 2.2250738585072014e-308;
@@ -1870,35 +1871,35 @@ public class MinPack {
         if (nm1 < 1)
             return;
         for (nmj = 1; nmj <= nm1; nmj++) {
-            j = n - nmj - 1;
-            if (1.0 < Math.abs(v[j])) {
-                cos = 1.0 / v[j];
+            j = n - nmj;
+            if (Math.abs(v[j-1]) > 1.0) {
+                cos = 1.0 / v[j-1];
                 sin = Math.sqrt(1.0 - cos * cos);
             } else {
-                sin = v[j];
+                sin = v[j-1];
                 cos = Math.sqrt(1.0 - sin * sin);
             }
-            for (i = 0; i < m; i++) {
-                temp = cos * a[i + j * lda] - sin * a[i + (n - 1) * lda];
-                a[i + (n - 1) * lda] = sin * a[i + j * lda] + cos * a[i + (n - 1) * lda];
-                a[i + j * lda] = temp;
+            for (i = 1; i <= m; i++) {
+                temp = cos * a[(i-1) + (j-1) * lda] - sin * a[(i-1) + (n - 1) * lda];
+                a[(i-1) + (n - 1) * lda] = sin * a[(i-1) + (j-1) * lda] + cos * a[(i-1) + (n - 1) * lda];
+                a[(i-1) + (j-1) * lda] = temp;
             }
         }
 
         /*     apply the second set of givens rotations to a. */
 
-        for (j = 0; j < nm1; j++) {
-            if (1.0 < Math.abs(w[j])) {
-                cos = 1.0 / w[j];
+        for (j = 1; j <= nm1; j++) {
+            if (Math.abs(w[j-1]) > 1.0) {
+                cos = 1.0 / w[j-1];
                 sin = Math.sqrt(1.0 - cos * cos);
             } else {
-                sin = w[j];
+                sin = w[j-1];
                 cos = Math.sqrt(1.0 - sin * sin);
             }
-            for (i = 0; i < m; i++) {
-                temp = cos * a[i + j * lda] + sin * a[i + (n - 1) * lda];
-                a[i + (n - 1) * lda] = -sin * a[i + j * lda] + cos * a[i + (n - 1) * lda];
-                a[i + j * lda] = temp;
+            for (i = 1; i <= m; i++) {
+                temp = cos * a[(i-1) + (j-1) * lda] + sin * a[(i-1) + (n - 1) * lda];
+                a[(i-1) + (n - 1) * lda] = -sin * a[(i-1) + (j-1) * lda] + cos * a[(i-1) + (n - 1) * lda];
+                a[(i-1) + (j-1) * lda] = temp;
             }
         }
     }
@@ -1976,20 +1977,11 @@ public class MinPack {
         final double p25 = 0.25;
         final double p5 = 0.5;
 
-        double cotan;
-        double cos;
-        double giant;
-        int i;
-        int j;
-        int jj;
-        int l;
-        int nm1;
+        int i,j,jj,l,nm1;
+        double cos,cotan,giant;
+        double sin,tan,tau,temp;
 
-        double sin;
         boolean sing;
-        double tan;
-        double tau;
-        double temp;
 
         /*     giant is the largest magnitude. */
 
@@ -2011,43 +2003,47 @@ public class MinPack {
         /*     in such a way that a spike is introduced into w. */
 
         nm1 = n - 1;
+        if (nm1 >= 1) {
+            for (int nmj = 1; nmj <= nm1; nmj++) {
+                j = n - nmj;
+                jj = jj - (m - j + 1);
+                w[j - 1] = 0.0;
 
-        for (j = n - 1; 1 <= j; j--) {
-            jj = jj - (m - j + 1);
-            w[j - 1] = 0.0;
+                if (v[j - 1] != 0.0) {
 
-            if (v[j - 1] != 0.0) {
-                /*        determine a givens rotation which eliminates the */
-                /*        j-th element of v. */
+                    /*        determine a givens rotation which eliminates the */
+                    /*        j-th element of v. */
 
-                if (Math.abs(v[n - 1]) < Math.abs(v[j - 1])) {
-                    cotan = v[n - 1] / v[j - 1];
-                    sin = p5 / Math.sqrt(p25 + p25 * cotan * cotan);
-                    cos = sin * cotan;
-                    tau = 1.0;
-                    if (1.0 < Math.abs(cos) * giant) {
-                        tau = 1.0 / cos;
+                    if (!(Math.abs(v[n - 1]) >= Math.abs(v[j - 1]))) {
+                        cotan = v[n - 1] / v[j - 1];
+                        sin = p5 / Math.sqrt(p25 + p25 * cotan * cotan);
+                        cos = sin * cotan;
+                        tau = 1.0;
+                        if (Math.abs(cos) * giant > 1.0) {
+                            tau = 1.0 / cos;
+                        }
+                    } else {
+                        tan = v[j - 1] / v[n - 1];
+                        cos = p5 / Math.sqrt(p25 + p25 * tan * tan);
+                        sin = cos * tan;
+                        tau = sin;
                     }
-                } else {
-                    tan = v[j - 1] / v[n - 1];
-                    cos = p5 / Math.sqrt(p25 + p25 * tan * tan);
-                    sin = cos * tan;
-                    tau = sin;
-                }
 
-                /*        apply the transformation to v and store the information */
-                /*        necessary to recover the givens rotation. */
-                v[n - 1] = sin * v[j - 1] + cos * v[n - 1];
-                v[j - 1] = tau;
+                    /*        apply the transformation to v and store the information */
+                    /*        necessary to recover the givens rotation. */
 
-                /*        apply the transformation to s and extend the spike in w. */
+                    v[n - 1] = sin * v[j - 1] + cos * v[n - 1];
+                    v[j - 1] = tau;
 
-                l = jj;
-                for (i = j; i <= m; i++) {
-                    temp = cos * s[l - 1] - sin * w[i - 1];
-                    w[i - 1] = sin * s[l - 1] + cos * w[i - 1];
-                    s[l - 1] = temp;
-                    l = l + 1;
+                    /*        apply the transformation to s and extend the spike in w. */
+
+                    l = jj;
+                    for (i = j; i <= m; i++) {
+                        temp = cos * s[l - 1] - sin * w[i - 1];
+                        w[i - 1] = sin * s[l - 1] + cos * w[i - 1];
+                        s[l - 1] = temp;
+                        l = l + 1;
+                    }
                 }
             }
         }
@@ -2059,44 +2055,49 @@ public class MinPack {
         /*     eliminate the spike. */
 
         sing = false;
+        if (nm1 >= 1) {
+            for (j = 1; j <= nm1; j++) {
 
-        for (j = 1; j <= nm1; j++) {
-            /*        determine a givens rotation which eliminates the */
-            /*        j-th element of the spike. */
-            if (w[j - 1] != 0.0) {
+                if (w[j - 1] != 0.0) {
 
-                if (Math.abs(s[jj - 1]) < Math.abs(w[j - 1])) {
-                    cotan = s[jj - 1] / w[j - 1];
-                    sin = p5 / Math.sqrt(p25 + p25 * cotan * cotan);
-                    cos = sin * cotan;
-                    tau = 1.0;
-                    if (1.0 < Math.abs(cos) * giant) {
-                        tau = 1.0 / cos;
+                    /*        determine a givens rotation which eliminates the */
+                    /*        j-th element of the spike. */
+
+                    if (!(Math.abs(s[jj - 1]) >= Math.abs(w[j - 1]))) {
+                        cotan = s[jj - 1] / w[j - 1];
+                        sin = p5 / Math.sqrt(p25 + p25 * cotan * cotan);
+                        cos = sin * cotan;
+                        tau = 1.0;
+                        if (Math.abs(cos) * giant > 1.0) {
+                            tau = 1.0 / cos;
+                        }
+                    } else {
+                        tan = w[j - 1] / s[jj - 1];
+                        cos = p5 / Math.sqrt(p25 + p25 * tan * tan);
+                        sin = cos * tan;
+                        tau = sin;
                     }
-                } else {
-                    tan = w[j - 1] / s[jj - 1];
-                    cos = p5 / Math.sqrt(p25 + p25 * tan * tan);
-                    sin = cos * tan;
-                    tau = sin;
-                }
-                /*        apply the transformation to s and reduce the spike in w. */
-                l = jj;
 
-                for (i = j; i <= m; i++) {
-                    temp = cos * s[l - 1] + sin * w[i - 1];
-                    w[i - 1] = -sin * s[l - 1] + cos * w[i - 1];
-                    s[l - 1] = temp;
-                    l = l + 1;
+                    /*        apply the transformation to s and reduce the spike in w. */
+
+                    l = jj;
+                    for (i = j; i <= m; i++) {
+                        temp = cos * s[l - 1] + sin * w[i - 1];
+                        w[i - 1] = -sin * s[l - 1] + cos * w[i - 1];
+                        s[l - 1] = temp;
+                        l = l + 1;
+                    }
+                    /*        store the information necessary to recover the */
+                    /*        givens rotation. */
+
+                    w[j - 1] = tau;
                 }
-                /*        store the information necessary to recover the */
-                /*        givens rotation. */
-                w[j - 1] = tau;
+                /*        test for zero diagonal elements in the output s. */
+                if (s[jj - 1] == 0.0) {
+                    sing = true;
+                }
+                jj = jj + (m - j + 1);
             }
-            /*        test for zero diagonal elements in the output s. */
-            if (s[jj - 1] == 0.0) {
-                sing = true;
-            }
-            jj = jj + (m - j + 1);
         }
         /*     move w back into the last column of the output s. */
         l = jj;
@@ -2169,20 +2170,9 @@ public class MinPack {
       ********** */
     public static void dogleg(int n, double r[], int lr, double diag[], double qtb[],
                               double delta, double x[], double wa1[], double wa2[]) {
-        double alpha;
-        double bnorm;
-        double epsmch;
-        double gnorm;
-        int i;
-        int j;
-        int jj;
-        int jp1;
-        int k;
-        int l;
-        double qnorm;
-        double sgnorm;
-        double sum;
-        double temp;
+
+        int i,j,jj,jp1,k,l;
+        double alpha,bnorm,epsmch,gnorm,qnorm,sgnorm,sum,temp;
         /*     epsmch is the machine precision. */
         epsmch = dpmpar(1);
         /*     first, calculate the gauss-newton direction. */
@@ -2194,9 +2184,11 @@ public class MinPack {
             jj = jj - k;
             l = jj + 1;
             sum = 0.0;
-            for (i = jp1; i <= n; i++) {
-                sum = sum + r[l - 1] * x[i - 1];
-                l = l + 1;
+            if (n >= jp1) {
+                for (i = jp1; i <= n; i++) {
+                    sum = sum + r[l - 1] * x[i - 1];
+                    l = l + 1;
+                }
             }
             temp = r[jj - 1];
             if (temp == 0.0) {
@@ -2213,9 +2205,9 @@ public class MinPack {
             x[j - 1] = (qtb[j - 1] - sum) / temp;
         }
         /*     test whether the gauss-newton direction is acceptable. */
-        for (j = 0; j < n; j++) {
-            wa1[j] = 0.0;
-            wa2[j] = diag[j] * x[j];
+        for (j = 1; j <= n; j++) {
+            wa1[j-1] = 0.0;
+            wa2[j-1] = diag[j-1] * x[j-1];
         }
         qnorm = enorm(n, 0, wa2);
 
@@ -2224,14 +2216,14 @@ public class MinPack {
         }
         /*     the gauss-newton direction is not acceptable. */
         /*     next, calculate the scaled gradient direction. */
-        l = 0;
-        for (j = 0; j < n; j++) {
-            temp = qtb[j];
-            for (i = j; i < n; i++) {
-                wa1[i] = wa1[i] + r[l] * temp;
+        l = 1;
+        for (j = 1; j <= n; j++) {
+            temp = qtb[j-1];
+            for (i = j; i <= n; i++) {
+                wa1[i-1] = wa1[i-1] + r[l-1] * temp;
                 l = l + 1;
             }
-            wa1[j] = wa1[j] / diag[j];
+            wa1[j-1] = wa1[j-1] / diag[j-1];
         }
 
         /*     calculate the norm of the scaled gradient and test for */
@@ -2241,26 +2233,29 @@ public class MinPack {
         sgnorm = 0.0;
         alpha = delta / qnorm;
 
-        /*     calculate the point along the scaled gradient */
-        /*     at which the quadratic is minimized. */
-
         if (gnorm != 0.0) {
-            for (j = 0; j < n; j++) {
-                wa1[j] = (wa1[j] / gnorm) / diag[j];
+
+            /*     calculate the point along the scaled gradient */
+            /*     at which the quadratic is minimized. */
+
+            for (j = 1; j <= n; j++) {
+                wa1[j-1] = (wa1[j-1] / gnorm) / diag[j-1];
             }
-            l = 0;
-            for (j = 0; j < n; j++) {
+            l = 1;
+            for (j = 1; j <= n; j++) {
                 sum = 0.0;
-                for (i = j; i < n; i++) {
-                    sum = sum + r[l] * wa1[i];
+                for (i = j; i <= n; i++) {
+                    sum = sum + r[l-1] * wa1[i-1];
                     l = l + 1;
                 }
-                wa2[j] = sum;
+                wa2[j-1] = sum;
             }
             temp = enorm(n, 0, wa2);
             sgnorm = (gnorm / temp) / temp;
-            alpha = 0.0;
+
             /*     test whether the scaled gradient direction is acceptable. */
+
+            alpha = 0.0;
 
             if (sgnorm < delta) {
 
@@ -2271,7 +2266,7 @@ public class MinPack {
                 bnorm = enorm(n, 0, qtb);
                 temp = (bnorm / gnorm) * (bnorm / qnorm) * (sgnorm / delta);
                 temp = temp - (delta / qnorm) * (sgnorm / delta) * (sgnorm / delta)
-                        + Math.sqrt(Math.pow(temp - (delta / qnorm), 2)
+                        + Math.sqrt((temp - (delta / qnorm))*(temp - (delta / qnorm))
                         + (1.0 - (delta / qnorm) * (delta / qnorm))
                         * (1.0 - (sgnorm / delta) * (sgnorm / delta)));
                 alpha = ((delta / qnorm)
@@ -2282,8 +2277,8 @@ public class MinPack {
         /*     direction and the scaled gradient direction. */
 
         temp = (1.0 - alpha) * Math.min(sgnorm, delta);
-        for (j = 0; j < n; j++) {
-            x[j] = temp * wa1[j] + alpha * x[j];
+        for (j = 1; j <= n; j++) {
+            x[j-1] = temp * wa1[j-1] + alpha * x[j-1];
         }
     }
 
@@ -2324,52 +2319,51 @@ public class MinPack {
      @author burton s. garbow, kenneth e. hillstrom, jorge j. more
 
       ********** */
-    public static void qform(int m, int n, double q[], int ldq) {
-        int i;
-        int j;
-        int k;
-        int minmn;
-        double sum;
-        double temp;
-        double[] wa;
+    public static void qform(int m, int n, double q[], int ldq, double[] wa) {
+        int i,j,k,minmn;
+        double sum,temp;
         /*     zero out upper triangle of q in the first min(m,n) columns. */
 
         minmn = Math.min(m, n);
-
-        for (j = 1; j < minmn; j++) {
-            for (i = 0; i <= j - 1; i++) {
-                q[i + j * ldq] = 0.0;
+        if (minmn >= 2) {
+            for (j = 2; j <= minmn; j++) {
+                int jm1 = j - 1;
+                for (i = 1; i <= jm1; i++) {
+                    q[(i-1) + (j-1) * ldq] = 0.0;
+                }
             }
         }
         /*     initialize remaining columns to those of the identity matrix. */
 
-        for (j = n; j < m; j++) {
-            for (i = 0; i < m; i++) {
-                q[i + j * ldq] = 0.0;
+        int np1 = n + 1;
+        if (m >= np1) {
+            for (j = np1; j <= m; j++) {
+                for (i = 1; i <= m; i++) {
+                    q[(i-1) + (j-1) * ldq] = 0.0;
+                }
+                q[(j-1) + (j-1) * ldq] = 1.0;
             }
-            q[j + j * ldq] = 1.0;
         }
 
         /*     accumulate q from its factored form. */
 
-        wa = new double[m];
-
-        for (k = minmn - 1; 0 <= k; k--) {
-            for (i = k; i < m; i++) {
-                wa[i] = q[i + k * ldq];
-                q[i + k * ldq] = 0.0;
+        for (int l = 1; l <= minmn; l++) {
+            k = minmn - l + 1;
+            for (i = k; i <= m; i++) {
+                wa[i-1] = q[(i-1) + (k-1) * ldq];
+                q[(i-1) + (k-1) * ldq] = 0.0;
             }
-            q[k + k * ldq] = 1.0;
+            q[(k-1) + (k-1) * ldq] = 1.0;
 
-            if (wa[k] != 0.0) {
-                for (j = k; j < m; j++) {
+            if (wa[k-1] != 0.0) {
+                for (j = k; j <= m; j++) {
                     sum = 0.0;
-                    for (i = k; i < m; i++) {
-                        sum = sum + q[i + j * ldq] * wa[i];
+                    for (i = k; i <= m; i++) {
+                        sum = sum + q[(i-1) + (j-1) * ldq] * wa[i-1];
                     }
-                    temp = sum / wa[k];
-                    for (i = k; i < m; i++) {
-                        q[i + j * ldq] = q[i + j * ldq] - temp * wa[i];
+                    temp = sum / wa[k-1];
+                    for (i = k; i <= m; i++) {
+                        q[(i-1) + (j-1) * ldq] = q[(i-1) + (j-1) * ldq] - temp * wa[i-1];
                     }
                 }
             }
@@ -2468,14 +2462,8 @@ public class MinPack {
     public static void fdjac1(Hybrd_Function fcn,
                               int n, double x[], double fvec[], double fjac[], int ldfjac, int[] iflag,
                               int ml, int mu, double epsfcn, double wa1[], double wa2[]) {
-        double eps;
-        double epsmch;
-        double h;
-        int i;
-        int j;
-        int k;
-        int msum;
-        double temp;
+        int i,j,k,msum;
+        double eps,epsmch,h,temp;
 
         /*     epsmch is the machine precision. */
 
@@ -2486,21 +2474,21 @@ public class MinPack {
 
         /*        computation of dense approximate jacobian. */
 
-        if (n <= msum) {
-            for (j = 0; j < n; j++) {
-                temp = x[j];
+        if (msum >= n) {
+            for (j = 1; j <= n; j++) {
+                temp = x[j-1];
                 h = eps * Math.abs(temp);
                 if (h == 0.0) {
                     h = eps;
                 }
-                x[j] = temp + h;
+                x[j-1] = temp + h;
                 fcn.apply(n, x, wa1, iflag);
                 if (iflag[0] < 0) {
                     break;
                 }
-                x[j] = temp;
-                for (i = 0; i < n; i++) {
-                    fjac[i + j * ldfjac] = (wa1[i] - fvec[i]) / h;
+                x[j-1] = temp;
+                for (i = 1; i <= n; i++) {
+                    fjac[(i-1) + (j-1) * ldfjac] = (wa1[i-1] - fvec[i-1]) / h;
                 }
             }
             return;
@@ -2509,30 +2497,29 @@ public class MinPack {
         /*        computation of banded approximate jacobian. */
 
 
-        for (k = 0; k < msum; k++) {
-            for (j = k; j < n; j = j + msum) {
-                wa2[j] = x[j];
-                h = eps * Math.abs(wa2[j]);
+        for (k = 1; k <= msum; k++) {
+            for (j = k; j <= n; j = j + msum) {
+                wa2[j-1] = x[j-1];
+                h = eps * Math.abs(wa2[j-1]);
                 if (h == 0.0) {
                     h = eps;
                 }
-                x[j] = wa2[j] + h;
+                x[j-1] = wa2[j-1] + h;
             }
             fcn.apply(n, x, wa1, iflag);
             if (iflag[0] < 0) {
                 break;
             }
-            for (j = k; j < n; j = j + msum) {
-                x[j] = wa2[j];
-                h = eps * Math.abs(wa2[j]);
+            for (j = k; j <= n; j = j + msum) {
+                x[j-1] = wa2[j-1];
+                h = eps * Math.abs(wa2[j-1]);
                 if (h == 0.0) {
                     h = eps;
                 }
-                for (i = 0; i < n; i++) {
-                    if (j - mu <= i && i <= j + ml) {
-                        fjac[i + j * ldfjac] = (wa1[i] - fvec[i]) / h;
-                    } else {
-                        fjac[i + j * ldfjac] = 0.0;
+                for (i = 1; i <= n; i++) {
+                    fjac[(i-1) + (j-1) * ldfjac] = 0.0;
+                    if (i >= j - mu && i <= j + ml) {
+                        fjac[(i-1) + (j-1) * ldfjac] = (wa1[i-1] - fvec[i-1]) / h;
                     }
                 }
             }
@@ -2678,36 +2665,16 @@ public class MinPack {
                             double diag[], int mode, double factor, int nprint, int[] nfev,
                             double fjac[], int ldfjac, double r[], int lr, double qtf[], double wa1[],
                             double wa2[], double wa3[], double wa4[]) {
-        double actred;
-        double delta = 0;
-        double epsmch;
-        double fnorm;
-        double fnorm1;
-        int i;
-        int iflag;
-        int info;
-        int iter;
+        int i,iflag,info,iter,j,l,msum,ncfail,ncsuc,nslow1,nslow2;
         int[] iwa = new int[1];
-        int j;
         boolean jeval;
-        int l;
-        int msum;
-        int ncfail;
-        int ncsuc;
-        int nslow1;
-        int nslow2;
         final double p001 = 0.001;
         final double p0001 = 0.0001;
         final double p1 = 0.1;
         final double p5 = 0.5;
-        double pnorm;
-        double prered;
-        double ratio;
-        double sum;
-        double temp;
-        double xnorm = 0.;
+        double actred,delta,epsmch,fnorm,fnorm1,pnorm,
+                prered,ratio,sum,temp,xnorm;
         int[] iflag_ = new int[1];
-
 
         /*     epsmch is the machine precision. */
         epsmch = dpmpar(1);
@@ -2718,41 +2685,20 @@ public class MinPack {
 
         /*     check the input parameters for errors. */
 
-        if (n <= 0) {
-            info = 0;
-            return info;
-        }
-        if (xtol < 0.0) {
-            info = 0;
-            return info;
-        }
-        if (maxfev <= 0) {
-            info = 0;
-            return info;
-        }
-        if (ml < 0) {
-            info = 0;
-            return info;
-        }
-        if (mu < 0) {
-            info = 0;
-            return info;
-        }
-        if (factor <= 0.0) {
-            info = 0;
-            return info;
-        }
-        if (ldfjac < n) {
-            info = 0;
-            return info;
-        }
-        if (lr < (n * (n + 1)) / 2) {
+        if (n <= 0
+            ||xtol < 0.0
+            ||maxfev <= 0
+            ||ml < 0
+            ||mu < 0
+            ||factor <= 0.0
+            ||ldfjac < n
+            ||lr < (n * (n + 1)) / 2) {
             info = 0;
             return info;
         }
         if (mode == 2) {
-            for (j = 0; j < n; j++) {
-                if (diag[j] <= 0.0) {
+            for (j = 1; j <= n; j++) {
+                if (diag[j-1] <= 0.0) {
                     info = 0;
                     return info;
                 }
@@ -2786,6 +2732,8 @@ public class MinPack {
         ncfail = 0;
         nslow1 = 0;
         nslow2 = 0;
+        delta = 0;
+        xnorm = 0;
 
         /*     beginning of the outer loop. */
 
@@ -2807,19 +2755,17 @@ public class MinPack {
 
             /*        compute the qr factorization of the jacobian. */
 
-            double[] wa_ = new double[n];
-            qrfac(n, n, fjac, ldfjac, 0, iwa, 1, wa1, wa2, wa_);
+            qrfac(n, n, fjac, ldfjac, 0, iwa, 1, wa1, wa2, wa3);
 
             /*        on the first iteration and if mode is 1, scale according */
             /*        to the norms of the columns of the initial jacobian. */
 
             if (iter == 1) {
-                if (mode == 1) {
-                    for (j = 0; j < n; j++) {
-                        if (wa2[j] != 0.0) {
-                            diag[j] = wa2[j];
-                        } else {
-                            diag[j] = 1.0;
+                if (mode != 2) {
+                    for (j = 1; j <= n; j++) {
+                        diag[j-1] = wa2[j-1];
+                        if (wa2[j-1] == 0.0) {
+                            diag[j-1] = 1.0;
                         }
                     }
                 }
@@ -2827,32 +2773,30 @@ public class MinPack {
                 /*        on the first iteration, calculate the norm of the scaled x */
                 /*        and initialize the step bound delta. */
 
-                for (j = 0; j < n; j++) {
-                    wa3[j] = diag[j] * x[j];
+                for (j = 1; j <= n; j++) {
+                    wa3[j-1] = diag[j-1] * x[j-1];
                 }
                 xnorm = enorm(n, 0, wa3);
-
-                if (xnorm == 0.0) {
+                delta = factor * xnorm;
+                if (delta == 0.0) {
                     delta = factor;
-                } else {
-                    delta = factor * xnorm;
                 }
             }
 
             /*        form (q transpose)*fvec and store in qtf. */
 
-            for (i = 0; i < n; i++) {
-                qtf[i] = fvec[i];
+            for (i = 1; i <= n; i++) {
+                qtf[i-1] = fvec[i-1];
             }
-            for (j = 0; j < n; j++) {
-                if (fjac[j + j * ldfjac] != 0.0) {
+            for (j = 1; j <= n; j++) {
+                if (fjac[(j-1) + (j-1) * ldfjac] != 0.0) {
                     sum = 0.0;
-                    for (i = j; i < n; i++) {
-                        sum = sum + fjac[i + j * ldfjac] * qtf[i];
+                    for (i = j; i <= n; i++) {
+                        sum = sum + fjac[(i-1) + (j-1) * ldfjac] * qtf[i-1];
                     }
-                    temp = -sum / fjac[j + j * ldfjac];
-                    for (i = j; i < n; i++) {
-                        qtf[i] = qtf[i] + fjac[i + j * ldfjac] * temp;
+                    temp = -sum / fjac[(j-1) + (j-1) * ldfjac];
+                    for (i = j; i <= n; i++) {
+                        qtf[i-1] = qtf[i-1] + fjac[(i-1) + (j-1) * ldfjac] * temp;
                     }
                 }
             }
@@ -2860,25 +2804,28 @@ public class MinPack {
 
             for (j = 1; j <= n; j++) {
                 l = j;
-                for (i = 1; i <= j - 1; i++) {
-                    r[l - 1] = fjac[(i - 1) + (j - 1) * ldfjac];
-                    l = l + n - i;
+                int jm1 = j - 1;
+                if (jm1 >= 1) {
+                    for (i = 1; i <= jm1; i++) {
+                        r[l - 1] = fjac[(i - 1) + (j - 1) * ldfjac];
+                        l = l + n - i;
+                    }
                 }
                 r[l - 1] = wa1[j - 1];
                 if (wa1[j - 1] == 0.0) {
-                    //System.err.println("  Matrix is singular.");
+                    System.err.println("  Matrix is singular.");
                 }
             }
 
             /*        accumulate the orthogonal factor in fjac. */
 
-            qform(n, n, fjac, ldfjac);
+            qform(n, n, fjac, ldfjac, wa1);
 
             /*        rescale if necessary. */
 
-            if (mode == 1) {
-                for (j = 0; j < n; j++) {
-                    diag[j] = Math.max(diag[j], wa2[j]);
+            if (mode != 2) {
+                for (j = 1; j <= n; j++) {
+                    diag[j-1] = Math.max(diag[j-1], wa2[j-1]);
                 }
             }
 
@@ -2887,7 +2834,7 @@ public class MinPack {
             for (; ; ) {
                 /*           if requested, call fcn to enable printing of iterates. */
 
-                if (0 < nprint) {
+                if (nprint > 0) {
                     if ((iter - 1) % nprint == 0) {
                         iflag = 0;
                         iflag_[0] = iflag;
@@ -2906,10 +2853,10 @@ public class MinPack {
 
                 /*           store the direction p and x + p. calculate the norm of p. */
 
-                for (j = 0; j < n; j++) {
-                    wa1[j] = -wa1[j];
-                    wa2[j] = x[j] + wa1[j];
-                    wa3[j] = diag[j] * wa1[j];
+                for (j = 1; j <= n; j++) {
+                    wa1[j-1] = -wa1[j-1];
+                    wa2[j-1] = x[j-1] + wa1[j-1];
+                    wa3[j-1] = diag[j-1] * wa1[j-1];
                 }
                 pnorm = enorm(n, 0, wa3);
 
@@ -2934,15 +2881,13 @@ public class MinPack {
 
                 /*           compute the scaled actual reduction. */
 
+                actred = -1.0;
                 if (fnorm1 < fnorm) {
                     actred = 1.0 - (fnorm1 / fnorm) * (fnorm1 / fnorm);
-                } else {
-                    actred = -1.0;
                 }
 
                 /*           compute the scaled predicted reduction. */
 
-                // FIXME
                 l = 1;
                 for (i = 1; i <= n; i++) {
                     sum = 0.0;
@@ -2953,31 +2898,29 @@ public class MinPack {
                     wa3[i - 1] = qtf[i - 1] + sum;
                 }
                 temp = enorm(n, 0, wa3);
-
+                prered = 0.0;
                 if (temp < fnorm) {
                     prered = 1.0 - (temp / fnorm) * (temp / fnorm);
-                } else {
-                    prered = 0.0;
                 }
 
                 /*           compute the ratio of the actual to the predicted */
                 /*           reduction. */
 
-                if (0.0 < prered) {
+                ratio = 0.0;
+                if (prered > 0.0) {
                     ratio = actred / prered;
-                } else {
-                    ratio = 0.0;
                 }
+
                 /*           update the step bound. */
 
-                if (ratio < p1) {
+                if (!(ratio >= p1)) {
                     ncsuc = 0;
                     ncfail = ncfail + 1;
                     delta = p5 * delta;
                 } else {
                     ncfail = 0;
                     ncsuc = ncsuc + 1;
-                    if (p5 <= ratio || 1 < ncsuc) {
+                    if (ratio >= p5 || ncsuc > 1) {
                         delta = Math.max(delta, pnorm / p5);
                     }
                     if (Math.abs(ratio - 1.0) <= p1) {
@@ -2986,13 +2929,13 @@ public class MinPack {
                 }
                 /*           test for successful iteration. */
 
-                if (p0001 <= ratio) {
+                if (!(ratio < p0001)) {
 
                     /*           successful iteration. update x, fvec, and their norms. */
-                    for (j = 0; j < n; j++) {
-                        x[j] = wa2[j];
-                        wa2[j] = diag[j] * x[j];
-                        fvec[j] = wa4[j];
+                    for (j = 1; j <= n; j++) {
+                        x[j-1] = wa2[j-1];
+                        wa2[j-1] = diag[j-1] * x[j-1];
+                        fvec[j-1] = wa4[j-1];
                     }
                     xnorm = enorm(n, 0, wa2);
                     fnorm = fnorm1;
@@ -3002,13 +2945,13 @@ public class MinPack {
                 /*           determine the progress of the iteration. */
 
                 nslow1 = nslow1 + 1;
-                if (p001 <= actred) {
+                if (actred >= p001) {
                     nslow1 = 0;
                 }
                 if (jeval) {
                     nslow2 = nslow2 + 1;
                 }
-                if (p1 <= actred) {
+                if (actred >= p1) {
                     nslow2 = 0;
                 }
                 /*           test for convergence. */
@@ -3022,7 +2965,7 @@ public class MinPack {
 //                }
                 /*           tests for termination and stringent tolerances. */
 
-                if (maxfev <= nfev[0]) {
+                if (nfev[0] >= maxfev) {
                     info = 2;
                     return info;
                 }
@@ -3048,15 +2991,15 @@ public class MinPack {
                 /*           calculate the rank one modification to the jacobian */
                 /*           and update qtf if necessary. */
 
-                for (j = 0; j < n; j++) {
+                for (j = 1; j <= n; j++) {
                     sum = 0.0;
-                    for (i = 0; i < n; i++) {
-                        sum = sum + fjac[i + j * ldfjac] * wa4[i];
+                    for (i = 1; i <= n; i++) {
+                        sum = sum + fjac[(i-1) + (j-1) * ldfjac] * wa4[i-1];
                     }
-                    wa2[j] = (sum - wa3[j]) / pnorm;
-                    wa1[j] = diag[j] * ((diag[j] * wa1[j]) / pnorm);
-                    if (p0001 <= ratio) {
-                        qtf[j] = sum;
+                    wa2[j-1] = (sum - wa3[j-1]) / pnorm;
+                    wa1[j-1] = diag[j-1] * ((diag[j-1] * wa1[j-1]) / pnorm);
+                    if (ratio >= p0001) {
+                        qtf[j-1] = sum;
                     }
                 }
                 /*           compute the qr factorization of the updated jacobian. */
@@ -3089,54 +3032,34 @@ public class MinPack {
     public static int hybrd1 (Hybrd_Function fcn, int n,
         double x[], double fvec[], double tol, double wa[], int lwa )
     {
-        double epsfcn;
-        double factor;
-        int index;
-        int info;
-        int j;
-        int lr;
-        int maxfev;
-        int ml;
-        int mode;
-        int mu;
+        int info,j,lr,maxfev,ml,mode,mu,nprint;
         int[] nfev = new int[1];
-        int nprint;
-        double xtol;
+        double epsfcn,factor,xtol;
 
         info = 0;
 /*
   Check the input.
 */
-        if ( n <= 0 )
-        {
-            return info;
-        }
-        if ( tol <= 0.0 )
-        {
-            return info;
-        }
-        if ( lwa < ( n * ( 3 * n + 13 ) ) / 2 )
+        if ( n <= 0 || tol <= 0.0 || lwa < ( n * ( 3 * n + 13 ) ) / 2 )
         {
             return info;
         }
 /*
   Call HYBRD.
 */
-        xtol = tol;
         maxfev = 200 * ( n + 1 );
+        xtol = tol;
         ml = n - 1;
         mu = n - 1;
         epsfcn = 0.0;
+        mode = 2;
         for ( j = 0; j < n; j++ )
         {
             wa[j] = 1.0;
         }
-        mode = 2;
         factor = 100.0;
         nprint = 0;
-        nfev[0] = 0;
         lr = ( n * ( n + 1 ) ) / 2;
-        index = 6 * n + lr;
 
         double[] fjac = new double[n*n];
         double[] r = new double[lr];
