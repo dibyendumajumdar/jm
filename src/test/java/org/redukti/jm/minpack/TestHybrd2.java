@@ -117,7 +117,7 @@ C     BURTON S. GARBOW, KENNETH E. HILLSTROM, JORGE J. MORE
                 initpt(p.n,X,p.nprob,FACTOR);
                 vecfcn(p.n,X,FVEC,p.nprob);
                 FNORM1 = MinPack.enorm(p.n, 0, FVEC);
-                System.out.println(p.nprob + " " + p.n);
+                System.out.println("PROBLEM " + p.nprob + " DIMENSION " + p.n);
                 nfev = 0;
                 INFO = MinPack.hybrd1(this,p.n,X,FVEC,TOL,WA,LWA);
                 FNORM2 = MinPack.enorm(p.n,0,FVEC);
@@ -126,10 +126,24 @@ C     BURTON S. GARBOW, KENNETH E. HILLSTROM, JORGE J. MORE
                 NF[IC-1] = nfev;
                 NX[IC-1] = INFO;
                 FNM[IC-1] = FNORM2;
+                System.out.println("INITIAL L2 NORM OF THE RESIDUALS " + FNORM1);
+                System.out.println("FINAL L2 NORM OF THE RESIDUALS " + FNORM2);
+                System.out.println("NUMBER OF FUNCTION EVALUATIONS " + nfev);
+                System.out.println("EXIT PARAMETER " + INFO);
+                System.out.println("FINAL APPROXIMATE SOLUTION");
+                for (int i = 0; i < p.n; i++) {
+                    System.out.print(X[i] + " ");
+                }
+                System.out.println();
+                System.out.println();
                 FACTOR = ten*FACTOR;
             }
         }
 
+        System.out.println("NPROB   N    NFEV  INFO  FINAL L2 NORM");
+        for (int i = 0; i < IC; i++) {
+            System.out.println(NP[i] + " " + NA[i] + " " + NF[i] + " " + NX[i] + " " + FNM[i]);
+        }
 /*
       DO 40 I = 1, IC
          WRITE (NWRITE,100) NP(I),NA(I),NF(I),NX(I),FNM(I)
