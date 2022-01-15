@@ -361,27 +361,27 @@ c     **********
 
                     case 1:
 
-                        System.out.print(x[ilow+1] + "\n\n");
+                        System.out.print(x[ilow+1-1] + "\n\n");
 
                         break;
 
                     case 2:
 
-                        System.out.print(x[ilow+1] + "  " + x[ilow+2] + "\n\n");
+                        System.out.print(x[ilow+1-1] + "  " + x[ilow+2-1] + "\n\n");
 
                         break;
 
                     case 3:
 
-                        System.out.print(x[ilow+1] + "  " + x[ilow+2] + "  " +
-                                x[ilow+3] + "\n\n");
+                        System.out.print(x[ilow+1-1] + "  " + x[ilow+2-1] + "  " +
+                                x[ilow+3-1] + "\n\n");
 
                         break;
 
                     case 4:
 
-                        System.out.print(x[ilow+1] + "  " + x[ilow+2] + "  " +
-                                x[ilow+3] + "  " + x[ilow+4] + "\n\n");
+                        System.out.print(x[ilow+1-1] + "  " + x[ilow+2-1] + "  " +
+                                x[ilow+3-1] + "  " + x[ilow+4-1] + "\n\n");
 
                         break;
 
