@@ -2,6 +2,7 @@ package org.redukti.jm.minpack;
 
 /* http://www.netlib.org/minpack/ex/file15 */
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class TestHybrd2 implements MinPack.Hybrd_Function {
@@ -63,6 +64,23 @@ C     BURTON S. GARBOW, KENNETH E. HILLSTROM, JORGE J. MORE
         }
     }
 
+    static final class ExpectedResult {
+        int nprob;
+        int n;
+        int nfev;
+        int info;
+        double fnorm;
+
+        public ExpectedResult(int nprob, int n, int nfev, int info, double fnorm) {
+            this.nprob = nprob;
+            this.n = n;
+            this.nfev = nfev;
+            this.info = info;
+            this.fnorm = fnorm;
+        }
+    }
+
+
     @Test
     public void hybrdTest()
     {
@@ -98,6 +116,64 @@ C     BURTON S. GARBOW, KENNETH E. HILLSTROM, JORGE J. MORE
                 new TestProblem(14,   10,    3)
         };
 
+        ExpectedResult[] expectedResults = new ExpectedResult[] {
+                new ExpectedResult(1,2,22,1,0.0),
+                new ExpectedResult(1,2,9,1,0.0),
+                new ExpectedResult(1,2,9,1,5.373479439185758E-13),
+                new ExpectedResult(2,4,106,4,1.630462542097203E-33),
+                new ExpectedResult(2,4,108,4,6.076260751859731E-33),
+                new ExpectedResult(2,4,132,4,1.6826101886919138E-33),
+                new ExpectedResult(3,2,181,1,1.7124935913770545E-9),
+                new ExpectedResult(3,2,11,1,3.7444845557566E-8),
+                new ExpectedResult(4,4,94,1,4.005066887716473E-11),
+                new ExpectedResult(4,4,234,1,5.154548231991567E-10),
+                new ExpectedResult(4,4,514,1,2.4911329353710294E-11),
+                new ExpectedResult(5,3,27,1,2.753457427134646E-13),
+                new ExpectedResult(5,3,31,1,4.4279070194841094E-14),
+                new ExpectedResult(5,3,40,1,1.610826463283445E-13),
+                new ExpectedResult(6,6,96,1,3.1916461155034835E-13),
+                new ExpectedResult(6,6,310,1,2.3361280345344312E-11),
+                new ExpectedResult(6,9,167,1,1.817744267637861E-14),
+                new ExpectedResult(6,9,167,1,1.1388692433566192E-12),
+                new ExpectedResult(7,5,17,1,3.540291609809256E-12),
+                new ExpectedResult(7,5,256,1,1.9023836575828113E-10),
+                new ExpectedResult(7,5,522,1,2.2691301265379657E-11),
+                new ExpectedResult(7,6,25,1,6.841873686727006E-10),
+                new ExpectedResult(7,6,172,1,2.281995876562388E-11),
+                new ExpectedResult(7,6,280,1,7.373849407048581E-11),
+                new ExpectedResult(7,7,20,1,2.398700313876028E-9),
+                new ExpectedResult(7,7,525,1,1.6243564328339643E-10),
+                new ExpectedResult(7,7,426,4,1.1214382813465733),
+                new ExpectedResult(7,8,120,4,0.06440508384820999),
+                new ExpectedResult(7,9,41,1,1.8898077704177782E-9),
+                new ExpectedResult(8,10,31,1,1.312131443737577E-14),
+                new ExpectedResult(8,10,31,1,1.6011864169946884E-14),
+                new ExpectedResult(8,10,38,1,4.213000162292041E-15),
+                new ExpectedResult(8,30,113,1,2.0734139515353978E-13),
+                new ExpectedResult(8,40,196,1,8.885114241808755E-14),
+                new ExpectedResult(9,10,16,1,2.533550868211982E-15),
+                new ExpectedResult(9,10,19,1,1.7259388604461542E-13),
+                new ExpectedResult(9,10,52,1,4.177635246055282E-10),
+                new ExpectedResult(10,1,7,1,5.551115123125783E-17),
+                new ExpectedResult(10,1,9,1,5.551115123125783E-17),
+                new ExpectedResult(10,1,16,1,2.7755575615628914E-17),
+                new ExpectedResult(10,10,16,1,5.009131711331394E-15),
+                new ExpectedResult(10,10,19,1,2.1883100011823385E-13),
+                new ExpectedResult(10,10,39,1,3.0348043981948507E-15),
+                new ExpectedResult(11,10,130,4,0.005296401898597665),
+                new ExpectedResult(11,10,84,1,5.915975632815838E-11),
+                new ExpectedResult(11,10,85,1,1.8562840902695322E-9),
+                new ExpectedResult(12,10,31,1,5.1194673452253975E-12),
+                new ExpectedResult(12,10,35,1,7.399639659366749E-11),
+                new ExpectedResult(12,10,66,1,0.0),
+                new ExpectedResult(13,10,21,1,1.4938793750003843E-8),
+                new ExpectedResult(13,10,59,1,5.3374415147502625E-9),
+                new ExpectedResult(13,10,42,1,9.878879503809141E-11),
+                new ExpectedResult(14,10,30,1,2.0579005008925252E-9),
+                new ExpectedResult(14,10,45,1,7.953614269648959E-9),
+                new ExpectedResult(14,10,58,1,4.526425424093767E-10),
+        };
+
         int IC,INFO,K,LWA;
         int[] NA = new int[60],
             NF = new int[60],
@@ -130,6 +206,7 @@ C     BURTON S. GARBOW, KENNETH E. HILLSTROM, JORGE J. MORE
                 NF[IC-1] = nfev;
                 NX[IC-1] = INFO;
                 FNM[IC-1] = FNORM2;
+                Assert.assertEquals(expectedResults[IC-1].fnorm, FNORM2, 1e-15);
                 System.out.println("INITIAL L2 NORM OF THE RESIDUALS " + FNORM1);
                 System.out.println("FINAL L2 NORM OF THE RESIDUALS " + FNORM2);
                 System.out.println("NUMBER OF FUNCTION EVALUATIONS " + nfev);
