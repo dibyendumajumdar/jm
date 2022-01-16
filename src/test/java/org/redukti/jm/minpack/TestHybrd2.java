@@ -2,6 +2,8 @@ package org.redukti.jm.minpack;
 
 /* http://www.netlib.org/minpack/ex/file15 */
 
+import org.junit.Test;
+
 public class TestHybrd2 implements MinPack.Hybrd_Function {
 
 // epsmch is the machine precision
@@ -61,7 +63,8 @@ C     BURTON S. GARBOW, KENNETH E. HILLSTROM, JORGE J. MORE
         }
     }
 
-    public static void main(String[] args)
+    @Test
+    public void hybrdTest()
     {
         TestHybrd2 instance = new TestHybrd2();
         instance.run();

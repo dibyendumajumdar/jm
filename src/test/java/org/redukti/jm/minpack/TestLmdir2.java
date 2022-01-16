@@ -51,6 +51,8 @@ Date        Translator        Changes
 */
 
 
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  *
@@ -124,8 +126,29 @@ c     **********
 
 */
 
+    static final class ExpectedResult {
+        int nprob;
+        int n;
+        int m;
+        int nfev;
+        int njev;
+        int info;
+        double fnorm;
 
-    public static void main (String args[]) {
+        public ExpectedResult(int nprob, int n, int m, int nfev, int njev, int info, double fnorm) {
+            this.nprob = nprob;
+            this.n = n;
+            this.m = m;
+            this.nfev = nfev;
+            this.njev = njev;
+            this.info = info;
+            this.fnorm = fnorm;
+        }
+    }
+
+
+    @Test
+    public void lmderTest() {
 
         int iii,i,ic,k,m,n,nread,ntries,nwrite;
 
@@ -282,6 +305,62 @@ c     **********
         ntryfile[27] = 1;
         ntryfile[28] = 1;
 
+        ExpectedResult[] expectedResults = new ExpectedResult[]{
+                new ExpectedResult(1,5,10,3,2,3,2.23606797749979),
+                new ExpectedResult(1,5,50,3,2,3,6.708203932499369),
+                new ExpectedResult(2,5,10,3,2,1,1.4638501094227998),
+                new ExpectedResult(2,5,50,3,2,1,3.4826301657349616),
+                new ExpectedResult(3,5,10,3,2,1,1.9097274212644622),
+                new ExpectedResult(3,5,50,3,2,1,3.6917294022424563),
+                new ExpectedResult(4,2,2,21,16,4,0.0),
+                new ExpectedResult(4,2,2,8,5,2,0.0),
+                new ExpectedResult(4,2,2,6,4,2,0.0),
+                new ExpectedResult(5,3,3,11,8,2,9.936523103425631E-17),
+                new ExpectedResult(5,3,3,20,15,2,1.0446788506548094E-19),
+                new ExpectedResult(5,3,3,19,16,2,3.1387778119467796E-29),
+                new ExpectedResult(6,4,4,59,58,4,6.109327859207777E-34),
+                new ExpectedResult(6,4,4,72,71,4,9.103607921611892E-40),
+                new ExpectedResult(6,4,4,68,67,4,2.3305236279326443E-35),
+                new ExpectedResult(7,2,2,14,8,1,6.998875175845752),
+                new ExpectedResult(7,2,2,19,12,1,6.9988751744895055),
+                new ExpectedResult(7,2,2,24,17,1,6.998875172429027),
+                new ExpectedResult(8,3,15,6,5,1,0.09063596033904667),
+                new ExpectedResult(8,3,15,37,36,1,4.174768701385386),
+                new ExpectedResult(8,3,15,14,13,1,4.1747687013596915),
+                new ExpectedResult(9,4,11,18,16,1,0.017535837721128954),
+                new ExpectedResult(9,4,11,78,70,1,0.032052192917936956),
+                new ExpectedResult(9,4,11,500,380,5,0.01753583967605901),
+                new ExpectedResult(10,3,16,126,116,3,9.377945146495339),
+                new ExpectedResult(10,3,16,400,345,5,799.407807513047),
+                new ExpectedResult(11,6,31,8,7,1,0.047829593909760784),
+                new ExpectedResult(11,6,31,14,13,1,0.047829593909695066),
+                new ExpectedResult(11,6,31,15,14,1,0.04782959391154404),
+                new ExpectedResult(11,9,31,8,7,3,0.0011831145921245528),
+                new ExpectedResult(11,9,31,19,15,1,0.0011831145921246938),
+                new ExpectedResult(11,9,31,19,16,3,0.0011831145921243115),
+                new ExpectedResult(11,12,31,10,9,3,2.1731040254851155E-5),
+                new ExpectedResult(11,12,31,13,12,3,2.173104025099853E-5),
+                new ExpectedResult(11,12,31,34,28,2,2.1731040254487666E-5),
+                new ExpectedResult(12,3,10,7,6,2,1.4686870114880517E-16),
+                new ExpectedResult(13,2,10,21,12,1,11.151779341349885),
+                new ExpectedResult(14,4,20,254,236,1,292.9542881912278),
+                new ExpectedResult(14,4,20,53,42,1,292.95427058141513),
+                new ExpectedResult(14,4,20,237,221,1,292.95430615446),
+                new ExpectedResult(15,1,8,1,1,4,1.886237969077315),
+                new ExpectedResult(15,1,8,29,28,1,1.8842482049995073),
+                new ExpectedResult(15,1,8,47,46,1,1.8842482049934663),
+                new ExpectedResult(15,8,8,39,20,1,0.05930323550467261),
+                new ExpectedResult(15,9,9,12,9,2,1.7600835153242613E-16),
+                new ExpectedResult(15,10,10,25,12,1,0.08064710040382533),
+                new ExpectedResult(16,10,10,14,12,2,8.662585850030506E-15),
+                new ExpectedResult(16,10,10,13,8,2,5.0009355010672645E-15),
+                new ExpectedResult(16,10,10,22,20,2,5.329070518200751E-15),
+                new ExpectedResult(16,30,30,19,14,2,1.48278587478574E-13),
+                new ExpectedResult(16,40,40,19,14,2,2.024535445435496E-13),
+                new ExpectedResult(17,5,33,18,15,1,0.007392492609048602),
+                new ExpectedResult(18,11,65,16,12,1,0.20034404483314),
+        };
+
 
         tol = Math.sqrt(epsmch);
 
@@ -335,6 +414,8 @@ c     **********
                 nx[ic] = info;
 
                 fnm[ic] = fnorm2;
+
+                Assert.assertEquals(expectedResults[ic-1].fnorm, fnorm2, 1e-15);
 
                 System.out.print("\n Initial L2 norm of the residuals: " + fnorm1 +
                         "\n Final L2 norm of the residuals: " + fnorm2 +
