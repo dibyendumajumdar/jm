@@ -3,7 +3,7 @@ package org.redukti.jm.minpack;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TestLmdir implements MinPack.Fcnder {
+public class TestLmdir implements MinPack.Lmder_function {
 
     /*      driver for lmder example. */
 
@@ -16,6 +16,8 @@ public class TestLmdir implements MinPack.Fcnder {
         int m;
         double[] y;
     }
+
+    TestData data;
 
     @Test
     public void test() {
@@ -39,7 +41,7 @@ public class TestLmdir implements MinPack.Fcnder {
         double[] y = {1.4e-1, 1.8e-1, 2.2e-1, 2.5e-1, 2.9e-1, 3.2e-1, 3.5e-1,
                 3.9e-1, 3.7e-1, 5.8e-1, 7.3e-1, 9.6e-1, 1.34, 2.1, 4.39};
 
-        TestData data = new TestData();
+        data = new TestData();
         data.m = m;
         data.y = y;
 
@@ -65,7 +67,7 @@ public class TestLmdir implements MinPack.Fcnder {
         factor = 1.e2;
         nprint = 0;
 
-        info = MinPack.lmder(this, data, m, n, x, fvec, fjac, ldfjac, ftol, xtol, gtol,
+        info = MinPack.lmder(this, m, n, x, fvec, fjac, ldfjac, ftol, xtol, gtol,
                 maxfev, diag, mode, factor, nprint, nfev, njev,
                 ipvt, qtf, wa1, wa2, wa3, wa4);
 
@@ -105,13 +107,13 @@ public class TestLmdir implements MinPack.Fcnder {
     }
 
     @Override
-    public int apply(Object p, int m, int n, double[] x, double[] fvec, double[] fjac, int ldfjac, int iflag) {
+    public int apply(int m, int n, double[] x, double[] fvec, double[] fjac, int ldfjac, int iflag) {
 
         /*      subroutine fcn for lmder example. */
 
         int i;
         double tmp1, tmp2, tmp3, tmp4;
-        final double[] y = ((TestData) p).y;
+        final double[] y = data.y;
         assert (m == 15 && n == 3);
 
         if (iflag == 0) {
@@ -145,5 +147,10 @@ public class TestLmdir implements MinPack.Fcnder {
             }
         }
         return 0;
+    }
+
+    @Override
+    public boolean hasJacobian() {
+        return true;
     }
 }

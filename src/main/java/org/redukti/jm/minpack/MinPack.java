@@ -178,16 +178,24 @@ public class MinPack {
         }
     }
 
-    public interface Fcnder {
+    public interface Lmder_function {
         /* for lmder1 and lmder */
         /*         if iflag = 1 calculate the functions at x and */
         /*         return this vector in fvec. do not alter fjac. */
         /*         if iflag = 2 calculate the jacobian at x and */
         /*         return this matrix in fjac. do not alter fvec. */
         /* return a negative value to terminate lmder1/lmder */
-        int apply(Object p, int m, int n, double[] x, double[] fvec,
-                  double[] fjac, int ldfjac, int iflag );
-
+        default int apply(int m, int n, double[] x, double[] fvec,
+                  double[] fjac, int ldfjac, int iflag ) {
+            return -1;
+        }
+        default int apply(int m, int n, double[] x, double[] fvec,
+                          int iflag ) {
+            return -1;
+        }
+        default boolean hasJacobian() {
+            return false;
+        }
     }
 
     /**
@@ -312,7 +320,7 @@ public class MinPack {
 
       ********** */
 
-    public static int lmder1(Fcnder fcn, Object p, int m, int n, double[] x,
+    public static int lmder1(Lmder_function fcn, int m, int n, double[] x,
                              double[] fvec, double[] fjac, int ldfjac, double tol,
                              int[] ipvt, double[] wa, int lwa) {
         /* Initialized data */
@@ -348,7 +356,7 @@ public class MinPack {
         double[] wa4 = new double[n];
         double[] wa5 = new double[m];
 
-        info = lmder(fcn, p, m, n, x, fvec, fjac, ldfjac,
+        info = lmder(fcn, m, n, x, fvec, fjac, ldfjac,
                 ftol, xtol, gtol, maxfev, wa, mode, factor, nprint,
                 nfev, njev, ipvt, wa1, wa2, wa3, wa4, wa5);
         if (info == 8) {
@@ -361,7 +369,7 @@ public class MinPack {
     }
 
 
-    public static int lmder(Fcnder fcnder_mn, Object p, int m, int n, double[] x,
+    public static int lmder(Lmder_function lmderfunction_mn, int m, int n, double[] x,
                             double[] fvec, double[] fjac, int ldfjac, double ftol,
                             double xtol, double gtol, int maxfev, double[] diag, int mode, double factor, int nprint,
                             int[] nfev, int[] njev, int[] ipvt, double[] qtf,
@@ -595,7 +603,9 @@ public class MinPack {
             /*     evaluate the function at the starting point */
             /*     and calculate its norm. */
 
-            iflag = fcnder_mn.apply(p, m, n, x, fvec, fjac, ldfjac, 1);
+            iflag = lmderfunction_mn.hasJacobian() ?
+                    lmderfunction_mn.apply(m, n, x, fvec, fjac, ldfjac, 1) :
+                    lmderfunction_mn.apply(m, n, x, fvec, 1);
             nfev[0] = 1;
             if (iflag < 0) {
                 throw new RuntimeException();
@@ -613,7 +623,9 @@ public class MinPack {
 
                 /*        calculate the jacobian matrix. */
 
-                iflag = fcnder_mn.apply(p, m, n, x, fvec, fjac, ldfjac, 2);
+                iflag = lmderfunction_mn.hasJacobian() ?
+                        lmderfunction_mn.apply(m, n, x, fvec, fjac, ldfjac, 2) :
+                        fdjac2(lmderfunction_mn, m, n, x, fvec, fjac, ldfjac, epsmch, wa4);
                 njev[0] = njev[0]+1;
                 if (iflag < 0) {
                     throw new RuntimeException();
@@ -624,7 +636,9 @@ public class MinPack {
                 if (nprint > 0) {
                     iflag = 0;
                     if ((iter - 1) % nprint == 0) {
-                        iflag = fcnder_mn.apply(p, m, n, x, fvec, fjac, ldfjac, 0);
+                        iflag = lmderfunction_mn.hasJacobian() ?
+                                lmderfunction_mn.apply(m, n, x, fvec, fjac, ldfjac, 0) :
+                                lmderfunction_mn.apply(m, n, x, fvec, 0);
                     }
                     if (iflag < 0) {
                         throw new RuntimeException();
@@ -746,7 +760,9 @@ public class MinPack {
 
                     /*           evaluate the function at x + p and calculate its norm. */
 
-                    iflag = fcnder_mn.apply(p, m, n, wa2, wa4, fjac, ldfjac, 1);
+                    iflag = lmderfunction_mn.hasJacobian() ?
+                            lmderfunction_mn.apply(m, n, wa2, wa4, fjac, ldfjac, 1) :
+                            lmderfunction_mn.apply(m, n, wa2, wa4, 1);
                     nfev[0] = nfev[0] + 1;
                     if (iflag < 0) {
                         throw new RuntimeException();
@@ -878,7 +894,9 @@ public class MinPack {
             info = iflag;
         }
         if (nprint > 0) {
-            fcnder_mn.apply(p, m, n, x, fvec, fjac, ldfjac, 0);
+            int t = lmderfunction_mn.hasJacobian() ?
+                    lmderfunction_mn.apply(m, n, x, fvec, fjac, ldfjac, 0) :
+                    lmderfunction_mn.apply(m, n, x, fvec, 0);
         }
         return info;
 
@@ -1698,7 +1716,7 @@ public class MinPack {
         int apply(Object p, int m, int n, double[] x, double[] wa, int i);
     }
 
-    public static int fdjac2(Function fcn_mn, Object p, int m, int n, double[] x,
+    public static int fdjac2(Lmder_function fcn_mn, int m, int n, double[] x,
             double[] fvec, double[] fjac, int ldfjac,
             double epsfcn, double[] wa)
     {
@@ -1800,7 +1818,7 @@ public class MinPack {
            calls made to compute the function from calls made to compute
            the Jacobian (see fcn() in examples/lmfdrv.c, and how njev
            is used to compute the number of Jacobian evaluations) */
-            iflag = fcn_mn.apply(p, m, n, x, wa, 2);
+            iflag = fcn_mn.apply(m, n, x, wa, 2);
             if (iflag < 0) {
                 return iflag;
             }

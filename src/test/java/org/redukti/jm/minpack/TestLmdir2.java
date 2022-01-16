@@ -70,7 +70,7 @@ Date        Translator        Changes
 
 
 
-public class TestLmdir2 implements MinPack.Fcnder {
+public class TestLmdir2 implements MinPack.Lmder_function {
 
 // epsmch is the machine precision
 
@@ -321,7 +321,7 @@ c     **********
 
                 int lwa = n * 5 + m;
                 double[] wa = new double[lwa];
-                info = MinPack.lmder1(lmdertest,null,m,n,x,fvec,fjac,m,tol,ipvt,wa,lwa);
+                info = MinPack.lmder1(lmdertest,m,n,x,fvec,fjac,m,tol,ipvt,wa,lwa);
 
                 ssqfcn(m,n,x,fvec,lmdertest.nprob);
 
@@ -430,7 +430,7 @@ c     **********
         public I(int m) {
             this.m = m;
         }
-        public int _(int row, int col) {
+        public int get(int row, int col) {
             row = row-1;
             col = col-1;
             return col * m + row;
@@ -438,7 +438,12 @@ c     **********
     }
 
     @Override
-    public int apply(Object p, int m, int n, double[] x, double[] fvec, double[] fjac, int ldfjac, int iflag) {
+    public boolean hasJacobian() {
+        return true;
+    }
+
+    @Override
+    public int apply(int m, int n, double[] x, double[] fvec, double[] fjac, int ldfjac, int iflag) {
 
 
 /*
@@ -571,11 +576,11 @@ c     **********
 
                     for (i = 1; i <= m; i++) {
 
-                        fjac[idx._(i,j)] = -temp;
+                        fjac[idx.get(i,j)] = -temp;
 
                     }
 
-                    fjac[idx._(j,j)] += one;
+                    fjac[idx.get(j,j)] += one;
 
                 }
 
@@ -589,7 +594,7 @@ c     **********
 
                     for (i = 1; i <= m; i++) {
 
-                        fjac[idx._(i,j)] = i*j;
+                        fjac[idx.get(i,j)] = i*j;
 
                     }
 
@@ -605,7 +610,7 @@ c     **********
 
                     for (i = 1; i <= m; i++) {
 
-                        fjac[idx._(i,j)] = zero;
+                        fjac[idx.get(i,j)] = zero;
                     }
 
                 }
@@ -617,7 +622,7 @@ c     **********
 
                     for (i = 2; i <= mm1; i++) {
 
-                        fjac[idx._(i,j)] = (i-1)*j;
+                        fjac[idx.get(i,j)] = (i-1)*j;
 
                     }
 
@@ -629,10 +634,10 @@ c     **********
 
 // Rosenbrock function.
 
-                fjac[idx._(1,1)] = -c20*x[1-1];
-                fjac[idx._(1,2)] = ten;
-                fjac[idx._(2,1)] = -one;
-                fjac[idx._(2,2)] = zero;
+                fjac[idx.get(1,1)] = -c20*x[1-1];
+                fjac[idx.get(1,2)] = ten;
+                fjac[idx.get(2,1)] = -one;
+                fjac[idx.get(2,2)] = zero;
 
                 return;
 
@@ -644,15 +649,15 @@ c     **********
                 temp = x[1-1]*x[1-1] + x[2-1]*x[2-1];
                 tmp1 = tpi*temp;
                 tmp2 = Math.sqrt(temp);
-                fjac[idx._(1,1)] = c100*x[2-1]/tmp1;
-                fjac[idx._(1,2)] = -c100*x[1-1]/tmp1;
-                fjac[idx._(1,3)] = ten;
-                fjac[idx._(2,1)] = ten*x[1-1]/tmp2;
-                fjac[idx._(2,2)] = ten*x[2-1]/tmp2;
-                fjac[idx._(2,3)] = zero;
-                fjac[idx._(3,1)] = zero;
-                fjac[idx._(3,2)] = zero;
-                fjac[idx._(3,3)] = one;
+                fjac[idx.get(1,1)] = c100*x[2-1]/tmp1;
+                fjac[idx.get(1,2)] = -c100*x[1-1]/tmp1;
+                fjac[idx.get(1,3)] = ten;
+                fjac[idx.get(2,1)] = ten*x[1-1]/tmp2;
+                fjac[idx.get(2,2)] = ten*x[2-1]/tmp2;
+                fjac[idx.get(2,3)] = zero;
+                fjac[idx.get(3,1)] = zero;
+                fjac[idx.get(3,2)] = zero;
+                fjac[idx.get(3,3)] = one;
 
                 return;
 
@@ -664,20 +669,20 @@ c     **********
 
                     for (i = 1; i <= 4; i++) {
 
-                        fjac[idx._(i,j)] = zero;
+                        fjac[idx.get(i,j)] = zero;
 
                     }
 
                 }
 
-                fjac[idx._(1,1)] = one;
-                fjac[idx._(1,2)] = ten;
-                fjac[idx._(2,3)] = Math.sqrt(five);
-                fjac[idx._(2,4)] = -fjac[idx._(2,3)];
-                fjac[idx._(3,2)] = two*(x[2-1] - two*x[3-1]);
-                fjac[idx._(3,3)] = -two*fjac[idx._(3,2)];
-                fjac[idx._(4,1)] = two*Math.sqrt(ten)*(x[1-1] - x[4-1]);
-                fjac[idx._(4,4)] = -fjac[idx._(4,1)];
+                fjac[idx.get(1,1)] = one;
+                fjac[idx.get(1,2)] = ten;
+                fjac[idx.get(2,3)] = Math.sqrt(five);
+                fjac[idx.get(2,4)] = -fjac[idx.get(2,3)];
+                fjac[idx.get(3,2)] = two*(x[2-1] - two*x[3-1]);
+                fjac[idx.get(3,3)] = -two*fjac[idx.get(3,2)];
+                fjac[idx.get(4,1)] = two*Math.sqrt(ten)*(x[1-1] - x[4-1]);
+                fjac[idx.get(4,4)] = -fjac[idx.get(4,1)];
 
                 return;
 
@@ -685,10 +690,10 @@ c     **********
 
 // Freudenstein and Roth function.
 
-                fjac[idx._(1,1)] = one;
-                fjac[idx._(1,2)] = x[2-1]*(ten - three*x[2-1]) - two;
-                fjac[idx._(2,1)] = one;
-                fjac[idx._(2,2)] = x[2-1]*(two + three*x[2-1]) - c14;
+                fjac[idx.get(1,1)] = one;
+                fjac[idx.get(1,2)] = x[2-1]*(ten - three*x[2-1]) - two;
+                fjac[idx.get(2,1)] = one;
+                fjac[idx.get(2,2)] = x[2-1]*(two + three*x[2-1]) - c14;
 
                 return;
 
@@ -703,9 +708,9 @@ c     **********
                     tmp3 = tmp1;
                     if (i > 8) tmp3 = tmp2;
                     tmp4 = (x[2-1]*tmp2 + x[3-1]*tmp3)*(x[2-1]*tmp2 + x[3-1]*tmp3);
-                    fjac[idx._(i,1)] = -one;
-                    fjac[idx._(i,2)] = tmp1*tmp2/tmp4;
-                    fjac[idx._(i,3)] = tmp1*tmp3/tmp4;
+                    fjac[idx.get(i,1)] = -one;
+                    fjac[idx.get(i,2)] = tmp1*tmp2/tmp4;
+                    fjac[idx.get(i,3)] = tmp1*tmp3/tmp4;
 
                 }
 
@@ -719,10 +724,10 @@ c     **********
 
                     tmp1 = v[i-1]*(v[i-1] + x[2-1]);
                     tmp2 = v[i-1]*(v[i-1] + x[3-1]) + x[4-1];
-                    fjac[idx._(i,1)] = -tmp1/tmp2;
-                    fjac[idx._(i,2)] = -v[i-1]*x[1-1]/tmp2;
-                    fjac[idx._(i,3)] = fjac[idx._(i,1)]*fjac[idx._(i,2)];
-                    fjac[idx._(i,4)] = fjac[idx._(i,3)]/v[i-1];
+                    fjac[idx.get(i,1)] = -tmp1/tmp2;
+                    fjac[idx.get(i,2)] = -v[i-1]*x[1-1]/tmp2;
+                    fjac[idx.get(i,3)] = fjac[idx.get(i,1)]*fjac[idx.get(i,2)];
+                    fjac[idx.get(i,4)] = fjac[idx.get(i,3)]/v[i-1];
 
                 }
 
@@ -737,9 +742,9 @@ c     **********
                     temp = five*i + c45 + x[3-1];
                     tmp1 = x[2-1]/temp;
                     tmp2 = Math.exp(tmp1);
-                    fjac[idx._(i,1)] = tmp2;
-                    fjac[idx._(i,2)] = x[1-1]*tmp2/temp;
-                    fjac[idx._(i,3)] = -tmp1*fjac[idx._(i,2)];
+                    fjac[idx.get(i,1)] = tmp2;
+                    fjac[idx.get(i,2)] = x[1-1]*tmp2/temp;
+                    fjac[idx.get(i,3)] = -tmp1*fjac[idx.get(i,2)];
 
                 }
 
@@ -768,7 +773,7 @@ c     **********
 
                     for (j = 1; j <= n; j++) {
 
-                        fjac[idx._(i,j)] = dx*(j-1 - temp);
+                        fjac[idx.get(i,j)] = dx*(j-1 - temp);
                         dx *= div;
 
                     }
@@ -779,15 +784,15 @@ c     **********
 
                     for (i = 30; i <= 31; i++) {
 
-                        fjac[idx._(i,j)] = zero;
+                        fjac[idx.get(i,j)] = zero;
 
                     }
 
                 }
 
-                fjac[idx._(30,1)] = one;
-                fjac[idx._(31,1)] = -two*x[1-1];
-                fjac[idx._(31,2)] = one;
+                fjac[idx.get(30,1)] = one;
+                fjac[idx.get(31,1)] = -two*x[1-1];
+                fjac[idx.get(31,2)] = one;
 
                 return;
 
@@ -800,9 +805,9 @@ c     **********
 
                     temp = i;
                     tmp1 = temp/ten;
-                    fjac[idx._(i,1)] = -tmp1*Math.exp(-tmp1*x[1-1]);
-                    fjac[idx._(i,2)] = tmp1*Math.exp(-tmp1*x[2-1]);
-                    fjac[idx._(i,3)] = Math.exp(-temp) - Math.exp(-tmp1);
+                    fjac[idx.get(i,1)] = -tmp1*Math.exp(-tmp1*x[1-1]);
+                    fjac[idx.get(i,2)] = tmp1*Math.exp(-tmp1*x[2-1]);
+                    fjac[idx.get(i,3)] = Math.exp(-temp) - Math.exp(-tmp1);
 
                 }
 
@@ -815,8 +820,8 @@ c     **********
                 for (i = 1; i <= m; i++) {
 
                     temp = i;
-                    fjac[idx._(i,1)] = -temp*Math.exp(temp*x[1-1]);
-                    fjac[idx._(i,2)] = -temp*Math.exp(temp*x[2-1]);
+                    fjac[idx.get(i,1)] = -temp*Math.exp(temp*x[1-1]);
+                    fjac[idx.get(i,2)] = -temp*Math.exp(temp*x[2-1]);
 
                 }
 
@@ -832,10 +837,10 @@ c     **********
                     ti = Math.sin(temp);
                     tmp1 = x[1-1] + temp*x[2-1] - Math.exp(temp);
                     tmp2 = x[3-1] + ti*x[4-1] - Math.cos(temp);
-                    fjac[idx._(i,1)] = two*tmp1;
-                    fjac[idx._(i,2)] = temp*fjac[idx._(i,1)];
-                    fjac[idx._(i,3)] = two*tmp2;
-                    fjac[idx._(i,4)] = ti*fjac[idx._(i,3)];
+                    fjac[idx.get(i,1)] = two*tmp1;
+                    fjac[idx.get(i,2)] = temp*fjac[idx.get(i,1)];
+                    fjac[idx.get(i,3)] = two*tmp2;
+                    fjac[idx.get(i,4)] = ti*fjac[idx.get(i,3)];
 
                 }
 
@@ -857,7 +862,7 @@ c     **********
 
                     for (i = 1; i <= m; i++) {
 
-                        fjac[idx._(i,j)] = dx*tmp4;
+                        fjac[idx.get(i,j)] = dx*tmp4;
                         ti = four*tmp2 + temp*tmp4 - tmp3;
                         tmp3 = tmp4;
                         tmp4 = ti;
@@ -883,11 +888,11 @@ c     **********
 
                     for (i = 1; i <= n; i++) {
 
-                        fjac[idx._(i,j)] = one;
+                        fjac[idx.get(i,j)] = one;
 
                     }
 
-                    fjac[idx._(j,j)] = two;
+                    fjac[idx.get(j,j)] = two;
 
                 }
 
@@ -908,7 +913,7 @@ c     **********
 
                     }
 
-                    fjac[idx._(n,j)] = prod/temp;
+                    fjac[idx.get(n,j)] = prod/temp;
 
                 }
 
@@ -923,11 +928,11 @@ c     **********
                     temp = ten*(i-1);
                     tmp1 = Math.exp(-x[4-1]*temp);
                     tmp2 = Math.exp(-x[5-1]*temp);
-                    fjac[idx._(i,1)] = -one;
-                    fjac[idx._(i,2)] = -tmp1;
-                    fjac[idx._(i,3)] = -tmp2;
-                    fjac[idx._(i,4)] = temp*x[2-1]*tmp1;
-                    fjac[idx._(i,5)] = temp*x[3-1]*tmp2;
+                    fjac[idx.get(i,1)] = -one;
+                    fjac[idx.get(i,2)] = -tmp1;
+                    fjac[idx.get(i,3)] = -tmp2;
+                    fjac[idx.get(i,4)] = temp*x[2-1]*tmp1;
+                    fjac[idx.get(i,5)] = temp*x[3-1]*tmp2;
 
                 }
 
@@ -944,17 +949,17 @@ c     **********
                     tmp2 = Math.exp(-x[6-1]*(temp-x[9-1])*(temp-x[9-1]));
                     tmp3 = Math.exp(-x[7-1]*(temp-x[10-1])*(temp-x[10-1]));
                     tmp4 = Math.exp(-x[8-1]*(temp-x[11-1])*(temp-x[11-1]));
-                    fjac[idx._(i,1)] = -tmp1;
-                    fjac[idx._(i,2)] = -tmp2;
-                    fjac[idx._(i,3)] = -tmp3;
-                    fjac[idx._(i,4)] = -tmp4;
-                    fjac[idx._(i,5)] = temp*x[1-1]*tmp1;
-                    fjac[idx._(i,6)] = x[2-1]*tmp2*(temp - x[9-1])*(temp - x[9-1]);
-                    fjac[idx._(i,7)] = x[3-1]*tmp3*(temp - x[10-1])*(temp - x[10-1]);
-                    fjac[idx._(i,8)] = x[4-1]*tmp4*(temp - x[11-1])*(temp - x[11-1]);
-                    fjac[idx._(i,9)] = -two*x[2-1]*x[6-1]*(temp - x[9-1])*tmp2;
-                    fjac[idx._(i,10)] = -two*x[3-1]*x[7-1]*(temp - x[10-1])*tmp3;
-                    fjac[idx._(i,11)] = -two*x[4-1]*x[8-1]*(temp - x[11-1])*tmp4;
+                    fjac[idx.get(i,1)] = -tmp1;
+                    fjac[idx.get(i,2)] = -tmp2;
+                    fjac[idx.get(i,3)] = -tmp3;
+                    fjac[idx.get(i,4)] = -tmp4;
+                    fjac[idx.get(i,5)] = temp*x[1-1]*tmp1;
+                    fjac[idx.get(i,6)] = x[2-1]*tmp2*(temp - x[9-1])*(temp - x[9-1]);
+                    fjac[idx.get(i,7)] = x[3-1]*tmp3*(temp - x[10-1])*(temp - x[10-1]);
+                    fjac[idx.get(i,8)] = x[4-1]*tmp4*(temp - x[11-1])*(temp - x[11-1]);
+                    fjac[idx.get(i,9)] = -two*x[2-1]*x[6-1]*(temp - x[9-1])*tmp2;
+                    fjac[idx.get(i,10)] = -two*x[3-1]*x[7-1]*(temp - x[10-1])*tmp3;
+                    fjac[idx.get(i,11)] = -two*x[4-1]*x[8-1]*(temp - x[11-1])*tmp4;
 
                 }
 
