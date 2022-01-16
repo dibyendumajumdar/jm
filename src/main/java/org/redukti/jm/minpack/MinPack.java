@@ -2745,8 +2745,8 @@ public class MinPack {
         xnorm = 0;
 
         /*     beginning of the outer loop. */
-
-        for (; ; ) {
+        outerloop:
+        for (;;) {
             jeval = true;
 
             /*        calculate the jacobian matrix. */
@@ -2758,8 +2758,7 @@ public class MinPack {
 
             nfev[0] = nfev[0] + msum;
             if (iflag < 0) {
-                info = iflag;
-                return info;
+                break outerloop;
             }
 
             /*        compute the qr factorization of the jacobian. */
@@ -2772,9 +2771,9 @@ public class MinPack {
             if (iter == 1) {
                 if (mode != 2) {
                     for (j = 1; j <= n; j++) {
-                        diag[j-1] = wa2[j-1];
-                        if (wa2[j-1] == 0.0) {
-                            diag[j-1] = 1.0;
+                        diag[j - 1] = wa2[j - 1];
+                        if (wa2[j - 1] == 0.0) {
+                            diag[j - 1] = 1.0;
                         }
                     }
                 }
@@ -2783,29 +2782,27 @@ public class MinPack {
                 /*        and initialize the step bound delta. */
 
                 for (j = 1; j <= n; j++) {
-                    wa3[j-1] = diag[j-1] * x[j-1];
+                    wa3[j - 1] = diag[j - 1] * x[j - 1];
                 }
                 xnorm = enorm(n, 0, wa3);
                 delta = factor * xnorm;
-                if (delta == 0.0) {
-                    delta = factor;
-                }
+                if (delta == 0.0) delta = factor;
             }
 
             /*        form (q transpose)*fvec and store in qtf. */
 
             for (i = 1; i <= n; i++) {
-                qtf[i-1] = fvec[i-1];
+                qtf[i - 1] = fvec[i - 1];
             }
             for (j = 1; j <= n; j++) {
-                if (fjac[(j-1) + (j-1) * ldfjac] != 0.0) {
+                if (fjac[(j - 1) + (j - 1) * ldfjac] != 0.0) {
                     sum = 0.0;
                     for (i = j; i <= n; i++) {
-                        sum = sum + fjac[(i-1) + (j-1) * ldfjac] * qtf[i-1];
+                        sum = sum + fjac[(i - 1) + (j - 1) * ldfjac] * qtf[i - 1];
                     }
-                    temp = -sum / fjac[(j-1) + (j-1) * ldfjac];
+                    temp = -sum / fjac[(j - 1) + (j - 1) * ldfjac];
                     for (i = j; i <= n; i++) {
-                        qtf[i-1] = qtf[i-1] + fjac[(i-1) + (j-1) * ldfjac] * temp;
+                        qtf[i - 1] = qtf[i - 1] + fjac[(i - 1) + (j - 1) * ldfjac] * temp;
                     }
                 }
             }
@@ -2834,12 +2831,12 @@ public class MinPack {
 
             if (mode != 2) {
                 for (j = 1; j <= n; j++) {
-                    diag[j-1] = Math.max(diag[j-1], wa2[j-1]);
+                    diag[j - 1] = Math.max(diag[j - 1], wa2[j - 1]);
                 }
             }
 
             /*        beginning of the inner loop. */
-
+            innerloop:
             for (; ; ) {
                 /*           if requested, call fcn to enable printing of iterates. */
 
@@ -2850,8 +2847,7 @@ public class MinPack {
                         fcn.apply(n, x, fvec, iflag_);
                         iflag = iflag_[0];
                         if (iflag < 0) {
-                            info = iflag;
-                            return info;
+                            break outerloop;
                         }
                     }
                 }
@@ -2863,9 +2859,9 @@ public class MinPack {
                 /*           store the direction p and x + p. calculate the norm of p. */
 
                 for (j = 1; j <= n; j++) {
-                    wa1[j-1] = -wa1[j-1];
-                    wa2[j-1] = x[j-1] + wa1[j-1];
-                    wa3[j-1] = diag[j-1] * wa1[j-1];
+                    wa1[j - 1] = -wa1[j - 1];
+                    wa2[j - 1] = x[j - 1] + wa1[j - 1];
+                    wa3[j - 1] = diag[j - 1] * wa1[j - 1];
                 }
                 pnorm = enorm(n, 0, wa3);
 
@@ -2883,8 +2879,7 @@ public class MinPack {
                 iflag = iflag_[0];
                 nfev[0] = nfev[0] + 1;
                 if (iflag < 0) {
-                    info = iflag;
-                    return info;
+                    break outerloop;
                 }
                 fnorm1 = enorm(n, 0, wa4);
 
@@ -2942,9 +2937,9 @@ public class MinPack {
 
                     /*           successful iteration. update x, fvec, and their norms. */
                     for (j = 1; j <= n; j++) {
-                        x[j-1] = wa2[j-1];
-                        wa2[j-1] = diag[j-1] * x[j-1];
-                        fvec[j-1] = wa4[j-1];
+                        x[j - 1] = wa2[j - 1];
+                        wa2[j - 1] = diag[j - 1] * x[j - 1];
+                        fvec[j - 1] = wa4[j - 1];
                     }
                     xnorm = enorm(n, 0, wa2);
                     fnorm = fnorm1;
@@ -2954,48 +2949,26 @@ public class MinPack {
                 /*           determine the progress of the iteration. */
 
                 nslow1 = nslow1 + 1;
-                if (actred >= p001) {
-                    nslow1 = 0;
-                }
-                if (jeval) {
-                    nslow2 = nslow2 + 1;
-                }
-                if (actred >= p1) {
-                    nslow2 = 0;
-                }
+                if (actred >= p001) nslow1 = 0;
+                if (jeval) nslow2 = nslow2 + 1;
+                if (actred >= p1) nslow2 = 0;
                 /*           test for convergence. */
 
-                if (delta <= xtol * xnorm || fnorm == 0.0) {
-                    info = 1;
-                    return info;
-                }
-//                if (info != 0) {
-//                goto TERMINATE;
-//                }
+                if (delta <= xtol * xnorm || fnorm == 0.0) info = 1;
+                if (info != 0) break outerloop;
+
                 /*           tests for termination and stringent tolerances. */
 
-                if (nfev[0] >= maxfev) {
-                    info = 2;
-                    return info;
-                }
-                if (p1 * Math.max(p1 * delta, pnorm) <= epsmch * xnorm) {
-                    info = 3;
-                    return info;
-                }
-                if (nslow2 == 5) {
-                    info = 4;
-                    return info;
-                }
-                if (nslow1 == 10) {
-                    info = 5;
-                    return info;
-                }
+                if (nfev[0] >= maxfev) info = 2;
+                if (p1 * Math.max(p1 * delta, pnorm) <= epsmch * xnorm) info = 3;
+                if (nslow2 == 5) info = 4;
+                if (nslow1 == 10) info = 5;
+                if (info != 0) break outerloop;
+
                 /*           criterion for recalculating jacobian approximation */
                 /*           by forward differences. */
 
-                if (ncfail == 2) {
-                    break;
-                }
+                if (ncfail == 2) break innerloop;
 
                 /*           calculate the rank one modification to the jacobian */
                 /*           and update qtf if necessary. */
@@ -3003,12 +2976,12 @@ public class MinPack {
                 for (j = 1; j <= n; j++) {
                     sum = 0.0;
                     for (i = 1; i <= n; i++) {
-                        sum = sum + fjac[(i-1) + (j-1) * ldfjac] * wa4[i-1];
+                        sum = sum + fjac[(i - 1) + (j - 1) * ldfjac] * wa4[i - 1];
                     }
-                    wa2[j-1] = (sum - wa3[j-1]) / pnorm;
-                    wa1[j-1] = diag[j-1] * ((diag[j-1] * wa1[j-1]) / pnorm);
+                    wa2[j - 1] = (sum - wa3[j - 1]) / pnorm;
+                    wa1[j - 1] = diag[j - 1] * ((diag[j - 1] * wa1[j - 1]) / pnorm);
                     if (ratio >= p0001) {
-                        qtf[j-1] = sum;
+                        qtf[j - 1] = sum;
                     }
                 }
                 /*           compute the qr factorization of the updated jacobian. */
@@ -3019,23 +2992,24 @@ public class MinPack {
 
                 jeval = false;
             }
-            /*           end of the inner loop. */
+            /* end of the inner loop. */
         }
-        /*        end of the outer loop. */
 
-//        TERMINATE:
-//
-//        /*     termination, either normal or user imposed. */
-//
-//        if (iflag < 0) {
-//            info = iflag;
-//        }
-//        if (nprint > 0) {
-//            fcn_nn(p, n, &x[1], &fvec[1], 0);
-//        }
-//        return info;
-//
-//        /*     last card of subroutine hybrd. */
+        /* end of the outer loop. */
+
+
+        /*     termination, either normal or user imposed. */
+
+        if (iflag < 0) {
+            info = iflag;
+        }
+        if (nprint > 0) {
+            iflag_[0] = 0;
+            fcn.apply(n, x, fvec, iflag_);
+        }
+        return info;
+
+        /*     last card of subroutine hybrd. */
     }
 
     public static int hybrd1 (Hybrd_Function fcn, int n,
