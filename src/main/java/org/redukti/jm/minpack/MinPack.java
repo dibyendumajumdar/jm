@@ -1707,30 +1707,6 @@ public class MinPack {
 
 
 
-
-    public interface Function {
-        /*         subroutine fcn(m,n,x,fvec,iflag) */
-        /*         integer m,n,iflag */
-        /*         double precision x(n),fvec(m) */
-        /*         ---------- */
-        /*         calculate the functions at x and */
-        /*         return this vector in fvec. */
-        /*         ---------- */
-
-        /**
-         * calculate the functions at x and return this vector in fvec
-         *
-         * @param p User object
-         * @param m rows
-         * @param n cols
-         * @param x x(n)
-         * @param wa fvec(m)
-         * @param i
-         * @return
-         */
-        int apply(Object p, int m, int n, double[] x, double[] wa, int i);
-    }
-
     public static int fdjac2(Lmder_function fcn_mn, int m, int n, double[] x,
             double[] fvec, double[] fjac, int ldfjac,
             double epsfcn, double[] wa)
