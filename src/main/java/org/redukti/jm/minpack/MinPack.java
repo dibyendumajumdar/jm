@@ -323,6 +323,12 @@ public class MinPack {
     public static int lmder1(Lmder_function fcn, int m, int n, double[] x,
                              double[] fvec, double[] fjac, int ldfjac, double tol,
                              int[] ipvt, double[] wa, int lwa) {
+        // Setting epsfcn to 0.0 causes machine precision to be used
+        return lmder1(fcn, m, n, x, fvec, fjac, ldfjac, tol, ipvt, wa, lwa, 0.0);
+    }
+    public static int lmder1(Lmder_function fcn, int m, int n, double[] x,
+                             double[] fvec, double[] fjac, int ldfjac, double tol,
+                             int[] ipvt, double[] wa, int lwa, double epsfcn) {
         /* Initialized data */
 
         final double factor = 100.;
@@ -358,7 +364,7 @@ public class MinPack {
 
         info = lmder(fcn, m, n, x, fvec, fjac, ldfjac,
                 ftol, xtol, gtol, maxfev, wa, mode, factor, nprint,
-                nfev, njev, ipvt, wa1, wa2, wa3, wa4, wa5);
+                nfev, njev, ipvt, wa1, wa2, wa3, wa4, wa5, epsfcn);
         if (info == 8) {
             info = 4;
         }
@@ -368,12 +374,22 @@ public class MinPack {
 
     }
 
+    public static int lmder(Lmder_function fcn, int m, int n, double[] x,
+                            double[] fvec, double[] fjac, int ldfjac, double ftol,
+                            double xtol, double gtol, int maxfev, double[] diag, int mode, double factor, int nprint,
+                            int[] nfev, int[] njev, int[] ipvt, double[] qtf,
+                            double[] wa1, double[] wa2, double[] wa3, double[] wa4) {
+        // Setting epsfcn to 0.0 causes machine precision to be used
+        return lmder(fcn, m, n, x, fvec, fjac, ldfjac,
+                ftol, xtol, gtol, maxfev, diag, mode, factor, nprint,
+                nfev, njev, ipvt, qtf, wa1, wa2, wa3, wa4, 0.0);
+    }
 
     public static int lmder(Lmder_function lmderfunction_mn, int m, int n, double[] x,
                             double[] fvec, double[] fjac, int ldfjac, double ftol,
                             double xtol, double gtol, int maxfev, double[] diag, int mode, double factor, int nprint,
                             int[] nfev, int[] njev, int[] ipvt, double[] qtf,
-                            double[] wa1, double[] wa2, double[] wa3, double[] wa4)
+                            double[] wa1, double[] wa2, double[] wa3, double[] wa4, double epsfcn)
     {
         /* Initialized data */
 
@@ -625,7 +641,7 @@ public class MinPack {
 
                 iflag = lmderfunction_mn.hasJacobian() ?
                         lmderfunction_mn.apply(m, n, x, fvec, fjac, ldfjac, 2) :
-                        fdjac2(lmderfunction_mn, m, n, x, fvec, fjac, ldfjac, epsmch, wa4);
+                        fdjac2(lmderfunction_mn, m, n, x, fvec, fjac, ldfjac, epsfcn, wa4);
                 njev[0] = njev[0]+1;
                 if (iflag < 0) {
                     throw new RuntimeException();
@@ -3048,11 +3064,18 @@ public class MinPack {
     }
 
     public static int hybrd1 (Hybrd_Function fcn, int n,
-        double x[], double fvec[], double tol, double wa[], int lwa )
+                              double x[], double fvec[], double tol, double wa[], int lwa) {
+        // Setting epsfcn to 0 means default machine precision will be used
+        return hybrd1(fcn, n, x, fvec, tol, wa, lwa, 0.0);
+    }
+
+
+    public static int hybrd1 (Hybrd_Function fcn, int n,
+                              double x[], double fvec[], double tol, double wa[], int lwa, double epsfcn )
     {
         int info,j,lr,maxfev,ml,mode,mu,nprint;
         int[] nfev = new int[1];
-        double epsfcn,factor,xtol;
+        double factor,xtol;
 
         info = 0;
 /*
@@ -3069,7 +3092,6 @@ public class MinPack {
         xtol = tol;
         ml = n - 1;
         mu = n - 1;
-        epsfcn = 0.0;
         mode = 2;
         for ( j = 0; j < n; j++ )
         {
