@@ -988,65 +988,65 @@ public class MinPack {
      *          *********
      */
     public static double enorm(int n, int start, double[] x) {
-        /* System generated locals */
-        double ret_val, d1;
+        int i;
+        double agiant, floatn, s1, s2, s3, xabs,
+                x1max, x3max;
+        double enorm;
 
-        /* Local variables */
-        double s1, s2, s3, xabs, x1max, x3max, agiant;
+        final double one = 1.0;
+        final double zero = 0.0;
+        final double rdwarf = 3.834e-20;
+        final double rgiant = 1.304e+19;
 
-        s1 = 0.;
-        s2 = 0.;
-        s3 = 0.;
-        x1max = 0.;
-        x3max = 0.;
-        agiant = rgiant / (double) n;
-        for (int i = start; i < n + start; ++i) {
+        s1 = 0.0;
+        s2 = 0.0;
+        s3 = 0.0;
+        x1max = 0.0;
+        x3max = 0.0;
+        floatn = n;
+        agiant = rgiant / floatn;
+
+        for (i = start; i < n + start; i++) {
             xabs = Math.abs(x[i]);
-            if (xabs >= agiant) {
-                    /* sum for large components. */
+            if (xabs <= rdwarf || xabs >= agiant) {
+                if (xabs > rdwarf) {
+                    // Sum for large components.
                     if (xabs > x1max) {
-                        /* Computing 2nd power */
-                        d1 = x1max / xabs;
-                        s1 = 1 + s1 * (d1 * d1);
+                        s1 = one + s1 * (x1max / xabs) * (x1max / xabs);
                         x1max = xabs;
                     } else {
-                        /* Computing 2nd power */
-                        d1 = xabs / x1max;
-                        s1 += d1 * d1;
+                        s1 += (xabs / x1max) * (xabs / x1max);
                     }
-            } else if (xabs <= rdwarf) {
-                    /* sum for small components. */
+                } else {
+                    // Sum for small components.
                     if (xabs > x3max) {
-                        /* Computing 2nd power */
-                        d1 = x3max / xabs;
-                        s3 = 1 + s3 * (d1 * d1);
+                        s3 = one + s3 * (x3max / xabs) * (x3max / xabs);
                         x3max = xabs;
-                    } else if (xabs != 0.) {
-                        /* Computing 2nd power */
-                        d1 = xabs / x3max;
-                        s3 += d1 * d1;
+                    } else {
+                        if (xabs != zero) s3 += (xabs / x3max) * (xabs / x3max);
+                    }
                 }
             } else {
-                /* sum for intermediate components. */
-                /* Computing 2nd power */
+                // Sum for intermediate components.
                 s2 += xabs * xabs;
             }
         }
 
-        /* calculation of norm. */
-
-        if (s1 != 0.) {
-            ret_val = x1max * Math.sqrt(s1 + (s2 / x1max) / x1max);
-        } else if (s2 != 0.) {
-            if (s2 >= x3max) {
-                ret_val = Math.sqrt(s2 * (1 + (x3max / s2) * (x3max * s3)));
-            } else {
-                ret_val = Math.sqrt(x3max * ((s2 / x3max) + (x3max * s3)));
-            }
+        // Calculation of norm.
+        if (s1 != zero) {
+            enorm = x1max * Math.sqrt(s1 + (s2 / x1max) / x1max);
         } else {
-            ret_val = x3max * Math.sqrt(s3);
+            if (s2 != zero) {
+                if (s2 >= x3max) {
+                    enorm = Math.sqrt(s2 * (one + (x3max / s2) * (x3max * s3)));
+                } else {
+                    enorm = Math.sqrt(x3max * ((s2 / x3max) + (x3max * s3)));
+                }
+            } else {
+                enorm = x3max * Math.sqrt(s3);
+            }
         }
-        return ret_val;
+        return enorm;
     }
 
     /**
