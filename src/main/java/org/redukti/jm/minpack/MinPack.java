@@ -166,15 +166,11 @@ public class MinPack {
     public static double dpmpar(int i) {
         switch(i) {
             case 1:
-                //return DPMPAR(realm,EPSILON); /* 2.2204460492503131e-16 | 1.19209290e-07F */
-                //return 2.2204460492503131e-16;
                 return 2.22044604926e-16;
             case 2:
-                //return DPMPAR(realm,MIN);    /* 2.2250738585072014e-308 | 1.17549435e-38F */
-                return 2.2250738585072014e-308;
+                return 2.22507385852e-308;
             default:
-                //return DPMPAR(realm,MAX);    /* 1.7976931348623157e+308 | 3.40282347e+38F */
-                return 1.7976931348623157e+308;
+                return 1.79769313485e+308;
         }
     }
 
