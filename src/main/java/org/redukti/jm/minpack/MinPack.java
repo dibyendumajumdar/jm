@@ -602,15 +602,16 @@ public class MinPack {
         njev[0] = 0;
 
         /*     check the input parameters for errors. */
-        try {
+        processing:
+        do {
             if (n <= 0 || m < n || ldfjac < m || ftol < 0. || xtol < 0. ||
                     gtol < 0. || maxfev <= 0 || factor <= 0.) {
-                throw new RuntimeException();
+                break processing;
             }
             if (mode == 2) {
                 for (j = 0; j < n; ++j) {
                     if (diag[j] <= 0.) {
-                        throw new RuntimeException();
+                        break processing;
                     }
                 }
             }
@@ -623,7 +624,7 @@ public class MinPack {
                     lmderfunction_mn.apply(m, n, x, fvec, 1);
             nfev[0] = 1;
             if (iflag < 0) {
-                throw new RuntimeException();
+                break processing;
             }
             fnorm = enorm(m, 0, fvec);
 
@@ -643,7 +644,7 @@ public class MinPack {
                         fdjac2(lmderfunction_mn, m, n, x, fvec, fjac, ldfjac, epsfcn, wa4);
                 njev[0] = njev[0]+1;
                 if (iflag < 0) {
-                    throw new RuntimeException();
+                    break processing;
                 }
 
                 /*        if requested, call fcn to enable printing of iterates. */
@@ -656,7 +657,7 @@ public class MinPack {
                                 lmderfunction_mn.apply(m, n, x, fvec, 0);
                     }
                     if (iflag < 0) {
-                        throw new RuntimeException();
+                        break processing;
                     }
                 }
 
@@ -736,7 +737,7 @@ public class MinPack {
                     info = 4;
                 }
                 if (info != 0) {
-                    throw new RuntimeException();
+                    break processing;
                 }
 
                 /*        rescale if necessary. */
@@ -780,7 +781,7 @@ public class MinPack {
                             lmderfunction_mn.apply(m, n, wa2, wa4, 1);
                     nfev[0] = nfev[0] + 1;
                     if (iflag < 0) {
-                        throw new RuntimeException();
+                        break processing;
                     }
                     fnorm1 = enorm(m, 0, wa4);
 
@@ -869,7 +870,7 @@ public class MinPack {
                         info = 3;
                     }
                     if (info != 0) {
-                        throw new RuntimeException();
+                        break processing;
                     }
 
                     /*           tests for termination and stringent tolerances. */
@@ -887,7 +888,7 @@ public class MinPack {
                         info = 8;
                     }
                     if (info != 0) {
-                        throw new RuntimeException();
+                        break processing;
                     }
 
                     /*           end of the inner loop. repeat if iteration unsuccessful. */
@@ -897,11 +898,7 @@ public class MinPack {
                 /*        end of the outer loop. */
 
             }
-        }
-        catch (Exception e) {
-            //TERMINATE:
-            //e.printStackTrace();
-        }
+        } while (false);
 
         /*     termination, either normal or user imposed. */
 
@@ -919,37 +916,6 @@ public class MinPack {
 
     } /* lmder_ */
 
-
-    /*
-  About the values for rdwarf and rgiant.
-
-  The original values, both in single-precision FORTRAN source code and in double-precision code were:
-#define rdwarf 3.834e-20
-#define rgiant 1.304e19
-  See for example:
-    http://www.netlib.org/slatec/src/denorm.f
-    http://www.netlib.org/slatec/src/enorm.f
-  However, rdwarf is smaller than sqrt(FLT_MIN) = 1.0842021724855044e-19, so that rdwarf**2 will
-  underflow. This contradicts the constraints expressed in the comments below.
-
-  We changed these constants to those proposed by the
-  implementation found in MPFIT http://cow.physics.wisc.edu/~craigm/idl/fitting.html
-
- cmpfit-1.2 proposes the following definitions:
-  rdwarf = sqrt(dpmpar(2)*1.5) * 10
-  rgiant = sqrt(dpmpar(3)) * 0.1
-
- The half version does not really worked that way, so we use for half:
-  rdwarf = sqrt(dpmpar(2)) * 2
-  rgiant = sqrt(dpmpar(3)) * 0.5
- Any suggestion is welcome. Half CMINPACK is really only a
- proof-of-concept anyway.
-
- See the example/tenorm*c, which computes these values
-*/
-
-    static final double rgiant = 1.34078079299426e+153;
-    static final double rdwarf = 1.82691291192569e-153;
 
     /**
      * function enorm
