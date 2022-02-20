@@ -2,169 +2,38 @@ package org.redukti.jm.minpack;
 
 public class MinPack {
 
-    /*     ********** */
-
-    /*     Function dpmpar */
-
-    /*     This function provides double precision machine parameters */
-    /*     when the appropriate set of data statements is activated (by */
-    /*     removing the c from column 1) and all other data statements are */
-    /*     rendered inactive. Most of the parameter values were obtained */
-    /*     from the corresponding Bell Laboratories Port Library function. */
-
-    /*     The function statement is */
-
-    /*       double precision function dpmpar(i) */
-
-    /*     where */
-
-    /*       i is an integer input variable set to 1, 2, or 3 which */
-    /*         selects the desired machine parameter. If the machine has */
-    /*         t base b digits and its smallest and largest exponents are */
-    /*         emin and emax, respectively, then these parameters are */
-
-    /*         dpmpar(1) = b**(1 - t), the machine precision, */
-
-    /*         dpmpar(2) = b**(emin - 1), the smallest magnitude, */
-
-    /*         dpmpar(3) = b**emax*(1 - b**(-t)), the largest magnitude. */
-
-    /*     Argonne National Laboratory. MINPACK Project. November 1996. */
-    /*     Burton S. Garbow, Kenneth E. Hillstrom, Jorge J. More' */
-
-    /*     ********** */
-
-    /*     Machine constants for the IBM 360/370 series, */
-    /*     the Amdahl 470/V6, the ICL 2900, the Itel AS/6, */
-    /*     the Xerox Sigma 5/7/9 and the Sel systems 85/86. */
-
-    /*     data mcheps(1),mcheps(2) / z34100000, z00000000 / */
-    /*     data minmag(1),minmag(2) / z00100000, z00000000 / */
-    /*     data maxmag(1),maxmag(2) / z7fffffff, zffffffff / */
-
-    /*     Machine constants for the Honeywell 600/6000 series. */
-
-    /*     data mcheps(1),mcheps(2) / o606400000000, o000000000000 / */
-    /*     data minmag(1),minmag(2) / o402400000000, o000000000000 / */
-    /*     data maxmag(1),maxmag(2) / o376777777777, o777777777777 / */
-
-    /*     Machine constants for the CDC 6000/7000 series. */
-
-    /*     data mcheps(1) / 15614000000000000000b / */
-    /*     data mcheps(2) / 15010000000000000000b / */
-
-    /*     data minmag(1) / 00604000000000000000b / */
-    /*     data minmag(2) / 00000000000000000000b / */
-
-    /*     data maxmag(1) / 37767777777777777777b / */
-    /*     data maxmag(2) / 37167777777777777777b / */
-
-    /*     Machine constants for the PDP-10 (KA processor). */
-
-    /*     data mcheps(1),mcheps(2) / "114400000000, "000000000000 / */
-    /*     data minmag(1),minmag(2) / "033400000000, "000000000000 / */
-    /*     data maxmag(1),maxmag(2) / "377777777777, "344777777777 / */
-
-    /*     Machine constants for the PDP-10 (KI processor). */
-
-    /*     data mcheps(1),mcheps(2) / "104400000000, "000000000000 / */
-    /*     data minmag(1),minmag(2) / "000400000000, "000000000000 / */
-    /*     data maxmag(1),maxmag(2) / "377777777777, "377777777777 / */
-
-    /*     Machine constants for the PDP-11. */
-
-    /*     data mcheps(1),mcheps(2) /   9472,      0 / */
-    /*     data mcheps(3),mcheps(4) /      0,      0 / */
-
-    /*     data minmag(1),minmag(2) /    128,      0 / */
-    /*     data minmag(3),minmag(4) /      0,      0 / */
-
-    /*     data maxmag(1),maxmag(2) /  32767,     -1 / */
-    /*     data maxmag(3),maxmag(4) /     -1,     -1 / */
-
-    /*     Machine constants for the Burroughs 6700/7700 systems. */
-
-    /*     data mcheps(1) / o1451000000000000 / */
-    /*     data mcheps(2) / o0000000000000000 / */
-
-    /*     data minmag(1) / o1771000000000000 / */
-    /*     data minmag(2) / o7770000000000000 / */
-
-    /*     data maxmag(1) / o0777777777777777 / */
-    /*     data maxmag(2) / o7777777777777777 / */
-
-    /*     Machine constants for the Burroughs 5700 system. */
-
-    /*     data mcheps(1) / o1451000000000000 / */
-    /*     data mcheps(2) / o0000000000000000 / */
-
-    /*     data minmag(1) / o1771000000000000 / */
-    /*     data minmag(2) / o0000000000000000 / */
-
-    /*     data maxmag(1) / o0777777777777777 / */
-    /*     data maxmag(2) / o0007777777777777 / */
-
-    /*     Machine constants for the Burroughs 1700 system. */
-
-    /*     data mcheps(1) / zcc6800000 / */
-    /*     data mcheps(2) / z000000000 / */
-
-    /*     data minmag(1) / zc00800000 / */
-    /*     data minmag(2) / z000000000 / */
-
-    /*     data maxmag(1) / zdffffffff / */
-    /*     data maxmag(2) / zfffffffff / */
-
-    /*     Machine constants for the Univac 1100 series. */
-
-    /*     data mcheps(1),mcheps(2) / o170640000000, o000000000000 / */
-    /*     data minmag(1),minmag(2) / o000040000000, o000000000000 / */
-    /*     data maxmag(1),maxmag(2) / o377777777777, o777777777777 / */
-
-    /*     Machine constants for the Data General Eclipse S/200. */
-
-    /*     Note - it may be appropriate to include the following card - */
-    /*     static dmach(3) */
-
-    /*     data minmag/20k,3*0/,maxmag/77777k,3*177777k/ */
-    /*     data mcheps/32020k,3*0/ */
-
-    /*     Machine constants for the Harris 220. */
-
-    /*     data mcheps(1),mcheps(2) / '20000000, '00000334 / */
-    /*     data minmag(1),minmag(2) / '20000000, '00000201 / */
-    /*     data maxmag(1),maxmag(2) / '37777777, '37777577 / */
-
-    /*     Machine constants for the Cray-1. */
-
-    /*     data mcheps(1) / 0376424000000000000000b / */
-    /*     data mcheps(2) / 0000000000000000000000b / */
-
-    /*     data minmag(1) / 0200034000000000000000b / */
-    /*     data minmag(2) / 0000000000000000000000b / */
-
-    /*     data maxmag(1) / 0577777777777777777777b / */
-    /*     data maxmag(2) / 0000007777777777777776b / */
-
-    /*     Machine constants for the Prime 400. */
-
-    /*     data mcheps(1),mcheps(2) / :10000000000, :00000000123 / */
-    /*     data minmag(1),minmag(2) / :10000000000, :00000100000 / */
-    /*     data maxmag(1),maxmag(2) / :17777777777, :37777677776 / */
-
-    /*     Machine constants for the VAX-11. */
-
-    /*     data mcheps(1),mcheps(2) /   9472,  0 / */
-    /*     data minmag(1),minmag(2) /    128,  0 / */
-    /*     data maxmag(1),maxmag(2) / -32769, -1 / */
-
-    /*     Machine constants for IEEE machines. */
-
-    /*    data dmach(1) /2.22044604926d-16/ */
-    /*    data dmach(2) /2.22507385852d-308/ */
-    /*    data dmach(3) /1.79769313485d+308/ */
+    /**
+     * Function dpmpar
+     * <p>
+     * This function provides double precision machine parameters
+     * when the appropriate set of data statements is activated (by
+     * removing the c from column 1) and all other data statements are
+     * rendered inactive. Most of the parameter values were obtained
+     * from the corresponding Bell Laboratories Port Library function.
+     * <p>
+     * The function statement is
+     * <p>
+     * double precision function dpmpar(i)
+     * <p>
+     * where
+     *
+     * @param i is an integer input variable set to 1, 2, or 3 which
+     *          selects the desired machine parameter. If the machine has
+     *          t base b digits and its smallest and largest exponents are
+     *          emin and emax, respectively, then these parameters are
+     *          <p>
+     *          dpmpar(1) = b**(1 - t), the machine precision,
+     *          <p>
+     *          dpmpar(2) = b**(emin - 1), the smallest magnitude,
+     *          <p>
+     *          dpmpar(3) = b**emax*(1 - b**(-t)), the largest magnitude.
+     *          <p>
+     *          Argonne National Laboratory. MINPACK Project. November 1996.
+     *          Burton S. Garbow, Kenneth E. Hillstrom, Jorge J. More'
+     * @return precision
+     */
     public static double dpmpar(int i) {
-        switch(i) {
+        switch (i) {
             case 1:
                 return 2.22044604926e-16;
             case 2:
@@ -174,17 +43,53 @@ public class MinPack {
         }
     }
 
-    public interface Lmder_function {
-        /* for lmder1 and lmder */
-        /*         if iflag = 1 calculate the functions at x and */
-        /*         return this vector in fvec. do not alter fjac. */
-        /*         if iflag = 2 calculate the jacobian at x and */
-        /*         return this matrix in fjac. do not alter fvec. */
-        /* return a negative value to terminate lmder1/lmder */
+    public interface Lmder_Function {
+        /**
+         * for lmder1 and lmder
+         * Used if the implementation can generate jacobian
+         *
+         * @param m      is a positive integer input variable set to the number
+         *               of functions
+         * @param n      is a positive integer input variable set to the number
+         *               of variables. n must not exceed m.
+         * @param x      is an array of length n. current estimate of the solution
+         *               vector.
+         * @param fvec   is an output array of length m which contains
+         *               the functions evaluated at the output x.
+         * @param fjac   is an output m by n array. the upper n by n submatrix
+         *               of fjac contains an upper triangular matrix r with
+         *               diagonal elements of nonincreasing magnitude
+         * @param ldfjac is a positive integer input variable not less than m
+         *               which specifies the leading dimension of the array fjac.
+         * @param iflag  flag
+         *               if iflag = 1 calculate the functions at x and
+         *               return this vector in fvec. do not alter fjac.
+         *               <p>
+         *               if iflag = 2 calculate the jacobian at x and
+         *               return this matrix in fjac. do not alter fvec.
+         * @return return a negative value to terminate lmder1/lmder
+         */
         default int apply(int m, int n, double[] x, double[] fvec,
                   double[] fjac, int ldfjac, int iflag ) {
             return -1;
         }
+        /**
+         * for lmder1 and lmder
+         * Used if the implementation does not generate jacobian
+         *
+         * @param m      is a positive integer input variable set to the number
+         *               of functions
+         * @param n      is a positive integer input variable set to the number
+         *               of variables. n must not exceed m.
+         * @param x      is an array of length n. current estimate of the solution
+         *               vector.
+         * @param fvec   is an output array of length m which contains
+         *               the functions evaluated at the output x.
+         * @param iflag  flag
+         *               if iflag = 1 calculate the functions at x and
+         *               return this vector in fvec.
+         * @return return a negative value to terminate lmder1/lmder
+         */
         default int apply(int m, int n, double[] x, double[] fvec,
                           int iflag ) {
             return -1;
@@ -305,24 +210,132 @@ public class MinPack {
 
      @param lwa is a positive integer input variable not less than 5*n+m.
 
-     subprograms called
+     @author argonne national laboratory. minpack project. march 1980.
+     @author burton s. garbow, kenneth e. hillstrom, jorge j. more
 
-     user-supplied ...... fcn
-
-     minpack-supplied ... lmder
-
-     argonne national laboratory. minpack project. march 1980.
-     burton s. garbow, kenneth e. hillstrom, jorge j. more
-
-      ********** */
-
-    public static int lmder1(Lmder_function fcn, int m, int n, double[] x,
+     */
+    public static int lmder1(Lmder_Function fcn, int m, int n, double[] x,
                              double[] fvec, double[] fjac, int ldfjac, double tol,
                              int[] ipvt, double[] wa, int lwa) {
         // Setting epsfcn to 0.0 causes machine precision to be used
         return lmder1(fcn, m, n, x, fvec, fjac, ldfjac, tol, ipvt, wa, lwa, 0.0);
     }
-    public static int lmder1(Lmder_function fcn, int m, int n, double[] x,
+    /**
+
+     subroutine lmder1
+
+     the purpose of lmder1 is to minimize the sum of the squares of
+     m nonlinear functions in n variables by a modification of the
+     levenberg-marquardt algorithm. this is done by using the more
+     general least-squares solver lmder. the user must provide a
+     subroutine which calculates the functions and the jacobian.
+
+     the subroutine statement is
+
+     subroutine lmder1(fcn,m,n,x,fvec,fjac,ldfjac,tol,info,
+     ipvt,wa,lwa)
+
+     where
+
+     fcn is the name of the user-supplied subroutine which
+     calculates the functions and the jacobian. fcn must
+     be declared in an external statement in the user
+     calling program, and should be written as follows.
+
+     subroutine fcn(m,n,x,fvec,fjac,ldfjac,iflag)
+     integer m,n,ldfjac,iflag
+     double precision x(n),fvec(m),fjac(ldfjac,n)
+     ----------
+     if iflag = 1 calculate the functions at x and
+     return this vector in fvec. do not alter fjac.
+     if iflag = 2 calculate the jacobian at x and
+     return this matrix in fjac. do not alter fvec.
+     ----------
+     return
+     end
+
+     the value of iflag should not be changed by fcn unless
+     the user wants to terminate execution of lmder1.
+     in this case set iflag to a negative integer.
+
+     @param m is a positive integer input variable set to the number
+     of functions.
+
+     @param n is a positive integer input variable set to the number
+     of variables. n must not exceed m.
+
+     @param x is an array of length n. on input x must contain
+     an initial estimate of the solution vector. on output x
+     contains the final estimate of the solution vector.
+
+     @param fvec is an output array of length m which contains
+     the functions evaluated at the output x.
+
+     @param fjac is an output m by n array. the upper n by n submatrix
+     of fjac contains an upper triangular matrix r with
+     diagonal elements of nonincreasing magnitude such that
+
+     t     t           t
+     p *(jac *jac)*p = r *r,
+
+     where p is a permutation matrix and jac is the final
+     calculated jacobian. column j of p is column ipvt(j)
+     (see below) of the identity matrix. the lower trapezoidal
+     part of fjac contains information generated during
+     the computation of r.
+
+     @param ldfjac is a positive integer input variable not less than m
+     which specifies the leading dimension of the array fjac.
+
+     @param tol is a nonnegative input variable. termination occurs
+     when the algorithm estimates either that the relative
+     error in the sum of squares is at most tol or that
+     the relative error between x and the solution is at
+     most tol.
+
+     @return  info is an integer output variable. if the user has
+     terminated execution, info is set to the (negative)
+     value of iflag. see description of fcn. otherwise,
+     info is set as follows.
+
+     info = 0  improper input parameters.
+
+     info = 1  algorithm estimates that the relative error
+     in the sum of squares is at most tol.
+
+     info = 2  algorithm estimates that the relative error
+     between x and the solution is at most tol.
+
+     info = 3  conditions for info = 1 and info = 2 both hold.
+
+     info = 4  fvec is orthogonal to the columns of the
+     jacobian to machine precision.
+
+     info = 5  number of calls to fcn with iflag = 1 has
+     reached 100*(n+1).
+
+     info = 6  tol is too small. no further reduction in
+     the sum of squares is possible.
+
+     info = 7  tol is too small. no further improvement in
+     the approximate solution x is possible.
+
+     @param ipvt is an integer output array of length n. ipvt
+     defines a permutation matrix p such that jac*p = q*r,
+     where jac is the final calculated jacobian, q is
+     orthogonal (not stored), and r is upper triangular
+     with diagonal elements of nonincreasing magnitude.
+     column j of p is column ipvt(j) of the identity matrix.
+
+     @param wa is a work array of length lwa.
+
+     @param lwa is a positive integer input variable not less than 5*n+m.
+
+     @author argonne national laboratory. minpack project. march 1980.
+     @author burton s. garbow, kenneth e. hillstrom, jorge j. more
+
+     */
+    public static int lmder1(Lmder_Function fcn, int m, int n, double[] x,
                              double[] fvec, double[] fjac, int ldfjac, double tol,
                              int[] ipvt, double[] wa, int lwa, double epsfcn) {
         /* Initialized data */
@@ -534,20 +547,10 @@ public class MinPack {
 
         @param wa4 is a work array of length m.
 
-      subprograms called
-
-        user-supplied ...... fcn
-
-        minpack-supplied ... dpmpar,enorm,lmpar,qrfac
-
-        fortran-supplied ... dabs,dmax1,dmin1,dsqrt,mod
-
-      argonne national laboratory. minpack project. march 1980.
-      burton s. garbow, kenneth e. hillstrom, jorge j. more
-
-      **********
+      @author argonne national laboratory. minpack project. march 1980.
+      @author burton s. garbow, kenneth e. hillstrom, jorge j. more
      */
-    public static int lmder(Lmder_function fcn, int m, int n, double[] x,
+    public static int lmder(Lmder_Function fcn, int m, int n, double[] x,
                             double[] fvec, double[] fjac, int ldfjac, double ftol,
                             double xtol, double gtol, int maxfev, double[] diag, int mode, double factor, int nprint,
                             int[] nfev, int[] njev, int[] ipvt, double[] qtf,
@@ -558,7 +561,174 @@ public class MinPack {
                 nfev, njev, ipvt, qtf, wa1, wa2, wa3, wa4, 0.0);
     }
 
-    public static int lmder(Lmder_function lmderfunction_mn, int m, int n, double[] x,
+    /**
+     subroutine lmder
+
+     the purpose of lmder is to minimize the sum of the squares of
+     m nonlinear functions in n variables by a modification of
+     the levenberg-marquardt algorithm. the user must provide a
+     subroutine which calculates the functions and the jacobian.
+
+     the subroutine statement is
+
+     subroutine lmder(fcn,m,n,x,fvec,fjac,ldfjac,ftol,xtol,gtol,
+     maxfev,diag,mode,factor,nprint,info,nfev,
+     njev,ipvt,qtf,wa1,wa2,wa3,wa4)
+
+     where
+
+     @param fcn is the name of the user-supplied subroutine which
+     calculates the functions and the jacobian. fcn must
+     be declared in an external statement in the user
+     calling program, and should be written as follows.
+
+     subroutine fcn(m,n,x,fvec,fjac,ldfjac,iflag)
+     integer m,n,ldfjac,iflag
+     double precision x(n),fvec(m),fjac(ldfjac,n)
+     ----------
+     if iflag = 1 calculate the functions at x and
+     return this vector in fvec. do not alter fjac.
+     if iflag = 2 calculate the jacobian at x and
+     return this matrix in fjac. do not alter fvec.
+     ----------
+     return
+     end
+
+     the value of iflag should not be changed by fcn unless
+     the user wants to terminate execution of lmder.
+     in this case set iflag to a negative integer.
+
+     @param m is a positive integer input variable set to the number
+     of functions.
+
+     @param n is a positive integer input variable set to the number
+     of variables. n must not exceed m.
+
+     @param x is an array of length n. on input x must contain
+     an initial estimate of the solution vector. on output x
+     contains the final estimate of the solution vector.
+
+     @param fvec is an output array of length m which contains
+     the functions evaluated at the output x.
+
+     @Param fjac is an output m by n array. the upper n by n submatrix
+     of fjac contains an upper triangular matrix r with
+     diagonal elements of nonincreasing magnitude such that
+
+     t     t           t
+     p *(jac *jac)*p = r *r,
+
+     where p is a permutation matrix and jac is the final
+     calculated jacobian. column j of p is column ipvt(j)
+     (see below) of the identity matrix. the lower trapezoidal
+     part of fjac contains information generated during
+     the computation of r.
+
+     @param ldfjac is a positive integer input variable not less than m
+     which specifies the leading dimension of the array fjac.
+
+     @param ftol is a nonnegative input variable. termination
+     occurs when both the actual and predicted relative
+     reductions in the sum of squares are at most ftol.
+     therefore, ftol measures the relative error desired
+     in the sum of squares.
+
+     @param xtol is a nonnegative input variable. termination
+     occurs when the relative error between two consecutive
+     iterates is at most xtol. therefore, xtol measures the
+     relative error desired in the approximate solution.
+
+     @param gtol is a nonnegative input variable. termination
+     occurs when the cosine of the angle between fvec and
+     any column of the jacobian is at most gtol in absolute
+     value. therefore, gtol measures the orthogonality
+     desired between the function vector and the columns
+     of the jacobian.
+
+     @param maxfev is a positive integer input variable. termination
+     occurs when the number of calls to fcn with iflag = 1
+     has reached maxfev.
+
+     @param diag is an array of length n. if mode = 1 (see
+     below), diag is internally set. if mode = 2, diag
+     must contain positive entries that serve as
+     multiplicative scale factors for the variables.
+
+     @param mode is an integer input variable. if mode = 1, the
+     variables will be scaled internally. if mode = 2,
+     the scaling is specified by the input diag. other
+     values of mode are equivalent to mode = 1.
+
+     @param factor is a positive input variable used in determining the
+     initial step bound. this bound is set to the product of
+     factor and the euclidean norm of diag*x if nonzero, or else
+     to factor itself. in most cases factor should lie in the
+     interval (.1,100.).100. is a generally recommended value.
+
+     @param nprint is an integer input variable that enables controlled
+     printing of iterates if it is positive. in this case,
+     fcn is called with iflag = 0 at the beginning of the first
+     iteration and every nprint iterations thereafter and
+     immediately prior to return, with x, fvec, and fjac
+     available for printing. fvec and fjac should not be
+     altered. if nprint is not positive, no special calls
+     of fcn with iflag = 0 are made.
+
+     @return info is an integer output variable. if the user has
+     terminated execution, info is set to the (negative)
+     value of iflag. see description of fcn. otherwise,
+     info is set as follows.
+
+     info = 0  improper input parameters.
+
+     info = 1  both actual and predicted relative reductions
+     in the sum of squares are at most ftol.
+
+     info = 2  relative error between two consecutive iterates
+     is at most xtol.
+
+     info = 3  conditions for info = 1 and info = 2 both hold.
+
+     info = 4  the cosine of the angle between fvec and any
+     column of the jacobian is at most gtol in
+     absolute value.
+
+     info = 5  number of calls to fcn with iflag = 1 has
+     reached maxfev.
+
+     info = 6  ftol is too small. no further reduction in
+     the sum of squares is possible.
+
+     info = 7  xtol is too small. no further improvement in
+     the approximate solution x is possible.
+
+     info = 8  gtol is too small. fvec is orthogonal to the
+     columns of the jacobian to machine precision.
+
+     @param nfev is an integer output variable set to the number of
+     calls to fcn with iflag = 1.
+
+     @param njev is an integer output variable set to the number of
+     calls to fcn with iflag = 2.
+
+     @param ipvt is an integer output array of length n. ipvt
+     defines a permutation matrix p such that jac*p = q*r,
+     where jac is the final calculated jacobian, q is
+     orthogonal (not stored), and r is upper triangular
+     with diagonal elements of nonincreasing magnitude.
+     column j of p is column ipvt(j) of the identity matrix.
+
+     @param qtf is an output array of length n which contains
+     the first n elements of the vector (q transpose)*fvec.
+
+     @param wa1, wa2, and wa3 are work arrays of length n.
+
+     @param wa4 is a work array of length m.
+
+     @author argonne national laboratory. minpack project. march 1980.
+     @author burton s. garbow, kenneth e. hillstrom, jorge j. more
+     */
+    public static int lmder(Lmder_Function fcn, int m, int n, double[] x,
                             double[] fvec, double[] fjac, int ldfjac, double ftol,
                             double xtol, double gtol, int maxfev, double[] diag, int mode, double factor, int nprint,
                             int[] nfev, int[] njev, int[] ipvt, double[] qtf,
@@ -615,9 +785,9 @@ public class MinPack {
             /*     evaluate the function at the starting point */
             /*     and calculate its norm. */
 
-            iflag = lmderfunction_mn.hasJacobian() ?
-                    lmderfunction_mn.apply(m, n, x, fvec, fjac, ldfjac, 1) :
-                    lmderfunction_mn.apply(m, n, x, fvec, 1);
+            iflag = fcn.hasJacobian() ?
+                    fcn.apply(m, n, x, fvec, fjac, ldfjac, 1) :
+                    fcn.apply(m, n, x, fvec, 1);
             nfev[0] = 1;
             if (iflag < 0) {
                 break processing;
@@ -635,9 +805,9 @@ public class MinPack {
 
                 /*        calculate the jacobian matrix. */
 
-                iflag = lmderfunction_mn.hasJacobian() ?
-                        lmderfunction_mn.apply(m, n, x, fvec, fjac, ldfjac, 2) :
-                        fdjac2(lmderfunction_mn, m, n, x, fvec, fjac, ldfjac, epsfcn, wa4);
+                iflag = fcn.hasJacobian() ?
+                        fcn.apply(m, n, x, fvec, fjac, ldfjac, 2) :
+                        fdjac2(fcn, m, n, x, fvec, fjac, ldfjac, epsfcn, wa4);
                 njev[0] = njev[0]+1;
                 if (iflag < 0) {
                     break processing;
@@ -648,9 +818,9 @@ public class MinPack {
                 if (nprint > 0) {
                     iflag = 0;
                     if ((iter - 1) % nprint == 0) {
-                        iflag = lmderfunction_mn.hasJacobian() ?
-                                lmderfunction_mn.apply(m, n, x, fvec, fjac, ldfjac, 0) :
-                                lmderfunction_mn.apply(m, n, x, fvec, 0);
+                        iflag = fcn.hasJacobian() ?
+                                fcn.apply(m, n, x, fvec, fjac, ldfjac, 0) :
+                                fcn.apply(m, n, x, fvec, 0);
                     }
                     if (iflag < 0) {
                         break processing;
@@ -772,9 +942,9 @@ public class MinPack {
 
                     /*           evaluate the function at x + p and calculate its norm. */
 
-                    iflag = lmderfunction_mn.hasJacobian() ?
-                            lmderfunction_mn.apply(m, n, wa2, wa4, fjac, ldfjac, 1) :
-                            lmderfunction_mn.apply(m, n, wa2, wa4, 1);
+                    iflag = fcn.hasJacobian() ?
+                            fcn.apply(m, n, wa2, wa4, fjac, ldfjac, 1) :
+                            fcn.apply(m, n, wa2, wa4, 1);
                     nfev[0] = nfev[0] + 1;
                     if (iflag < 0) {
                         break processing;
@@ -902,15 +1072,15 @@ public class MinPack {
             info = iflag;
         }
         if (nprint > 0) {
-            int t = lmderfunction_mn.hasJacobian() ?
-                    lmderfunction_mn.apply(m, n, x, fvec, fjac, ldfjac, 0) :
-                    lmderfunction_mn.apply(m, n, x, fvec, 0);
+            int t = fcn.hasJacobian() ?
+                    fcn.apply(m, n, x, fvec, fjac, ldfjac, 0) :
+                    fcn.apply(m, n, x, fvec, 0);
         }
         return info;
 
         /*     last card of subroutine lmder. */
 
-    } /* lmder_ */
+    }
 
 
     /**
@@ -939,15 +1109,8 @@ public class MinPack {
      *
      * @param n is a positive integer input variable.
      * @param x is an input array of length n.
-     *          <p>
-     *          subprograms called
-     *          <p>
-     *          fortran-supplied ... dabs,dsqrt
-     *          <p>
-     *          argonne national laboratory. minpack project. march 1980.
-     *          burton s. garbow, kenneth e. hillstrom, jorge j. more
-     *          <p>
-     *          *********
+     * @author argonne national laboratory. minpack project. march 1980.
+     * @author burton s. garbow, kenneth e. hillstrom, jorge j. more
      */
     public static double enorm(int n, int start, double[] x) {
         int i;
@@ -1067,17 +1230,8 @@ public class MinPack {
      *               with rdiag.
      * @param wa     is a work array of length n. if pivot is false, then wa
      *               can coincide with rdiag.
-     *               <p>
-     *               subprograms called
-     *               <p>
-     *               minpack-supplied ... dpmpar,enorm
-     *               <p>
-     *               fortran-supplied ... dmax1,dsqrt,min0
-     *               <p>
-     *               argonne national laboratory. minpack project. march 1980.
-     *               burton s. garbow, kenneth e. hillstrom, jorge j. more
-     *               <p>
-     *               *********
+     * @author argonne national laboratory. minpack project. march 1980.
+     * @author burton s. garbow, kenneth e. hillstrom, jorge j. more
      */
     public static void qrfac(int m, int n, double[] a, int lda,
                              int pivot, int[] ipvt, int lipvt, double[] rdiag,
@@ -1245,15 +1399,9 @@ public class MinPack {
      * @param sdiag is an output array of length n which contains the
      *              diagonal elements of the upper triangular matrix s.
      * @param wa    is a work array of length n.
-     *              <p>
-     *              subprograms called
-     *              <p>
-     *              fortran-supplied ... dabs,dsqrt
-     *              <p>
-     *              argonne national laboratory. minpack project. march 1980.
-     *              burton s. garbow, kenneth e. hillstrom, jorge j. more
-     *              <p>
-     *              *********
+
+     * @author argonne national laboratory. minpack project. march 1980.
+     * @author burton s. garbow, kenneth e. hillstrom, jorge j. more
      */
     public static void qrsolv(int n, double[] r, int ldr,
                               int[] ipvt, double[] diag, double[] qtb, double[] x,
@@ -1448,17 +1596,8 @@ public class MinPack {
      * @param sdiag is an output array of length n which contains the
      *              diagonal elements of the upper triangular matrix s.
      * @param wa1   and wa2 are work arrays of length n.
-     *              <p>
-     *              subprograms called
-     *              <p>
-     *              minpack-supplied ... dpmpar,enorm,qrsolv
-     *              <p>
-     *              fortran-supplied ... dabs,dmax1,dmin1,dsqrt
-     *              <p>
-     *              argonne national laboratory. minpack project. march 1980.
-     *              burton s. garbow, kenneth e. hillstrom, jorge j. more
-     *              <p>
-     *              *********
+     * @author argonne national laboratory. minpack project. march 1980.
+     * @author burton s. garbow, kenneth e. hillstrom, jorge j. more
      */
     public static void lmpar(int n, double[] r, int ldr,
                              int[] ipvt, double[] diag, double[] qtb, double delta,
@@ -1667,11 +1806,9 @@ public class MinPack {
         }
     }
 
-
-
-    public static int fdjac2(Lmder_function fcn_mn, int m, int n, double[] x,
-            double[] fvec, double[] fjac, int ldfjac,
-            double epsfcn, double[] wa)
+    public static int fdjac2(Lmder_Function fcn_mn, int m, int n, double[] x,
+                             double[] fvec, double[] fjac, int ldfjac,
+                             double epsfcn, double[] wa)
     {
         /* Local variables */
         double h;
@@ -1679,84 +1816,7 @@ public class MinPack {
         double eps, temp, epsmch;
         int iflag;
 
-        /*     ********** */
-
-        /*     subroutine fdjac2 */
-
-        /*     this subroutine computes a forward-difference approximation */
-        /*     to the m by n jacobian matrix associated with a specified */
-        /*     problem of m functions in n variables. */
-
-        /*     the subroutine statement is */
-
-        /*       subroutine fdjac2(fcn,m,n,x,fvec,fjac,ldfjac,iflag,epsfcn,wa) */
-
-        /*     where */
-
-        /*       fcn is the name of the user-supplied subroutine which */
-        /*         calculates the functions. fcn must be declared */
-        /*         in an external statement in the user calling */
-        /*         program, and should be written as follows. */
-
-        /*         subroutine fcn(m,n,x,fvec,iflag) */
-        /*         integer m,n,iflag */
-        /*         double precision x(n),fvec(m) */
-        /*         ---------- */
-        /*         calculate the functions at x and */
-        /*         return this vector in fvec. */
-        /*         ---------- */
-        /*         return */
-        /*         end */
-
-        /*         the value of iflag should not be changed by fcn unless */
-        /*         the user wants to terminate execution of fdjac2. */
-        /*         in this case set iflag to a negative integer. */
-
-        /*       m is a positive integer input variable set to the number */
-        /*         of functions. */
-
-        /*       n is a positive integer input variable set to the number */
-        /*         of variables. n must not exceed m. */
-
-        /*       x is an input array of length n. */
-
-        /*       fvec is an input array of length m which must contain the */
-        /*         functions evaluated at x. */
-
-        /*       fjac is an output m by n array which contains the */
-        /*         approximation to the jacobian matrix evaluated at x. */
-
-        /*       ldfjac is a positive integer input variable not less than m */
-        /*         which specifies the leading dimension of the array fjac. */
-
-        /*       iflag is an integer variable which can be used to terminate */
-        /*         the execution of fdjac2. see description of fcn. */
-
-        /*       epsfcn is an input variable used in determining a suitable */
-        /*         step length for the forward-difference approximation. this */
-        /*         approximation assumes that the relative errors in the */
-        /*         functions are of the order of epsfcn. if epsfcn is less */
-        /*         than the machine precision, it is assumed that the relative */
-        /*         errors in the functions are of the order of the machine */
-        /*         precision. */
-
-        /*       wa is a work array of length m. */
-
-        /*     subprograms called */
-
-        /*       user-supplied ...... fcn */
-
-        /*       minpack-supplied ... dpmpar */
-
-        /*       fortran-supplied ... dabs,dmax1,dsqrt */
-
-        /*     argonne national laboratory. minpack project. march 1980. */
-        /*     burton s. garbow, kenneth e. hillstrom, jorge j. more */
-
-        /*     ********** */
-
         /*     epsmch is the machine precision. */
-
         epsmch = dpmpar(1);
 
         eps = Math.sqrt((Math.max(epsfcn,epsmch)));
@@ -1824,14 +1884,10 @@ public class MinPack {
      information necessary to recover the givens rotation gw(i)
      described above.
 
-     subroutines called
-
-     fortran-supplied ... dabs,dsqrt
-
      @author argonne national laboratory. minpack project. march 1980.
      @author burton s. garbow, kenneth e. hillstrom, jorge j. more
 
-      ********** */
+    */
     public static void r1mpyq(int m, int n, double a[], int lda, double v[], double w[]) {
         double cos,sin,temp;
         int i, j, nmj, nm1;
@@ -1932,17 +1988,10 @@ public class MinPack {
      of the diagonal elements of the output s are zero. otherwise
      sing is set false.
 
-     subprograms called
 
-     minpack-supplied ... dpmpar
-
-     fortran-supplied ... dabs,dsqrt
-
-     argonne national laboratory. minpack project. march 1980.
-     burton s. garbow, kenneth e. hillstrom, jorge j. more,
-     john l. nazareth
-
-      ********** */
+     @author argonne national laboratory. minpack project. march 1980.
+     @author burton s. garbow, kenneth e. hillstrom, jorge j. more, john l. nazareth
+     */
     public static boolean r1updt(int m, int n, double s[], int ls, double u[], double v[],
                                  double w[]) {
         final double p25 = 0.25;
@@ -2129,16 +2178,10 @@ public class MinPack {
 
      @param wa1 and wa2 are work arrays of length n.
 
-     subprograms called
+     @author argonne national laboratory. minpack project. march 1980.
+     @author burton s. garbow, kenneth e. hillstrom, jorge j. more
 
-     minpack-supplied ... dpmpar,enorm
-
-     fortran-supplied ... dabs,dmax1,dmin1,dsqrt
-
-     argonne national laboratory. minpack project. march 1980.
-     burton s. garbow, kenneth e. hillstrom, jorge j. more
-
-      ********** */
+     */
     public static void dogleg(int n, double r[], int lr, double diag[], double qtb[],
                               double delta, double x[], double wa1[], double wa2[]) {
 
@@ -2280,16 +2323,11 @@ public class MinPack {
      @param ldq is a positive integer input variable not less than m
      which specifies the leading dimension of the array q.
 
-      wa is a work array of length m.
-
-     subprograms called
-
-     fortran-supplied ... min0
+     @param wa is a work array of length m.
 
      @author argonne national laboratory. minpack project. march 1980.
      @author burton s. garbow, kenneth e. hillstrom, jorge j. more
-
-      ********** */
+     */
     public static void qform(int m, int n, double q[], int ldq, double[] wa) {
         int i,j,k,minmn;
         double sum,temp;
@@ -2341,6 +2379,19 @@ public class MinPack {
         }
     }
 
+    /**
+     * Interface for user-supplied subroutine which
+     * calculates the functions. fcn must be declared
+     * in an external statement in the user calling
+     * program, and should be written as follows.
+     * <p>
+     * Calculate the functions at x and
+     * return this vector in fvec.
+     * <p>
+     * the value of iflag should not be changed by fcn unless
+     * the user wants to terminate execution of fdjac1.
+     * in this case set iflag to a negative integer.
+     */
     public interface Hybrd_Function {
         void apply ( int n, double x[], double fvec[], int[] iflag );
     }
@@ -2420,16 +2471,10 @@ public class MinPack {
      least n, then the jacobian is considered dense, and wa2 is
      not referenced.
 
-     subprograms called
-
-     minpack-supplied ... dpmpar
-
-     fortran-supplied ... dabs,dmax1,dsqrt
-
      @author argonne national laboratory. minpack project. march 1980.
      @author burton s. garbow, kenneth e. hillstrom, jorge j. more
 
-      ********** */
+      */
     public static void fdjac1(Hybrd_Function fcn,
                               int n, double x[], double fvec[], double fjac[], int ldfjac, int[] iflag,
                               int ml, int mu, double epsfcn, double wa1[], double wa2[]) {
@@ -2974,13 +3019,148 @@ public class MinPack {
         /*     last card of subroutine hybrd. */
     }
 
+    /**
+     * subroutine hybrd1
+     * <p>
+     * the purpose of hybrd1 is to find a zero of a system of
+     * n nonlinear functions in n variables by a modification
+     * of the powell hybrid method. this is done by using the
+     * more general nonlinear equation solver hybrd. the user
+     * must provide a subroutine which calculates the functions.
+     * the jacobian is then calculated by a forward-difference
+     * approximation.
+     * <p>
+     * the subroutine statement is
+     * <p>
+     * subroutine hybrd1(fcn,n,x,fvec,tol,info,wa,lwa)
+     * <p>
+     * where
+     *
+     * @param fcn  is the name of the user-supplied subroutine which
+     *             calculates the functions. fcn must be declared
+     *             in an external statement in the user calling
+     *             program, and should be written as follows.
+     *             <p>
+     *             subroutine fcn(n,x,fvec,iflag)
+     *             integer n,iflag
+     *             double precision x(n),fvec(n)
+     *             ----------
+     *             calculate the functions at x and
+     *             return this vector in fvec.
+     *             ---------
+     *             return
+     *             end
+     *             <p>
+     *             the value of iflag should not be changed by fcn unless
+     *             the user wants to terminate execution of hybrd1.
+     *             in this case set iflag to a negative integer.
+     * @param n    is a positive integer input variable set to the number
+     *             of functions and variables.
+     * @param x    is an array of length n. on input x must contain
+     *             an initial estimate of the solution vector. on output x
+     *             contains the final estimate of the solution vector.
+     * @param fvec is an output array of length n which contains
+     *             the functions evaluated at the output x.
+     * @param tol  is a nonnegative input variable. termination occurs
+     *             when the algorithm estimates that the relative error
+     *             between x and the solution is at most tol.
+     * @param wa   is a work array of length lwa.
+     * @param lwa  is a positive integer input variable not less than
+     *             (n*(3*n+13))/2.
+     * @return info is an integer output variable. if the user has
+     * terminated execution, info is set to the (negative)
+     * value of iflag. see description of fcn. otherwise,
+     * info is set as follows.
+     * <p>
+     * info = 0   improper input parameters.
+     * <p>
+     * info = 1   algorithm estimates that the relative error
+     * between x and the solution is at most tol.
+     * <p>
+     * info = 2   number of calls to fcn has reached or exceeded
+     * 200*(n+1).
+     * <p>
+     * info = 3   tol is too small. no further improvement in
+     * the approximate solution x is possible.
+     * <p>
+     * info = 4   iteration is not making good progress.
+     * @author argonne national laboratory. minpack project. march 1980.
+     * @author burton s. garbow, kenneth e. hillstrom, jorge j. more
+     */
     public static int hybrd1 (Hybrd_Function fcn, int n,
                               double x[], double fvec[], double tol, double wa[], int lwa) {
         // Setting epsfcn to 0 means default machine precision will be used
         return hybrd1(fcn, n, x, fvec, tol, wa, lwa, 0.0);
     }
 
-
+    /**
+     * subroutine hybrd1
+     * <p>
+     * the purpose of hybrd1 is to find a zero of a system of
+     * n nonlinear functions in n variables by a modification
+     * of the powell hybrid method. this is done by using the
+     * more general nonlinear equation solver hybrd. the user
+     * must provide a subroutine which calculates the functions.
+     * the jacobian is then calculated by a forward-difference
+     * approximation.
+     * <p>
+     * the subroutine statement is
+     * <p>
+     * subroutine hybrd1(fcn,n,x,fvec,tol,info,wa,lwa)
+     * <p>
+     * where
+     *
+     * @param fcn  is the name of the user-supplied subroutine which
+     *             calculates the functions. fcn must be declared
+     *             in an external statement in the user calling
+     *             program, and should be written as follows.
+     *             <p>
+     *             subroutine fcn(n,x,fvec,iflag)
+     *             integer n,iflag
+     *             double precision x(n),fvec(n)
+     *             ----------
+     *             calculate the functions at x and
+     *             return this vector in fvec.
+     *             ---------
+     *             return
+     *             end
+     *             <p>
+     *             the value of iflag should not be changed by fcn unless
+     *             the user wants to terminate execution of hybrd1.
+     *             in this case set iflag to a negative integer.
+     * @param n    is a positive integer input variable set to the number
+     *             of functions and variables.
+     * @param x    is an array of length n. on input x must contain
+     *             an initial estimate of the solution vector. on output x
+     *             contains the final estimate of the solution vector.
+     * @param fvec is an output array of length n which contains
+     *             the functions evaluated at the output x.
+     * @param tol  is a nonnegative input variable. termination occurs
+     *             when the algorithm estimates that the relative error
+     *             between x and the solution is at most tol.
+     * @param wa   is a work array of length lwa.
+     * @param lwa  is a positive integer input variable not less than
+     *             (n*(3*n+13))/2.
+     * @return info is an integer output variable. if the user has
+     * terminated execution, info is set to the (negative)
+     * value of iflag. see description of fcn. otherwise,
+     * info is set as follows.
+     * <p>
+     * info = 0   improper input parameters.
+     * <p>
+     * info = 1   algorithm estimates that the relative error
+     * between x and the solution is at most tol.
+     * <p>
+     * info = 2   number of calls to fcn has reached or exceeded
+     * 200*(n+1).
+     * <p>
+     * info = 3   tol is too small. no further improvement in
+     * the approximate solution x is possible.
+     * <p>
+     * info = 4   iteration is not making good progress.
+     * @author argonne national laboratory. minpack project. march 1980.
+     * @author burton s. garbow, kenneth e. hillstrom, jorge j. more
+     */
     public static int hybrd1 (Hybrd_Function fcn, int n,
                               double x[], double fvec[], double tol, double wa[], int lwa, double epsfcn )
     {
@@ -3091,15 +3271,9 @@ public class MinPack {
      *               than 0.5 indicates that the i-th gradient is probably
      *               correct, while a value of err(i) less than 0.5 indicates
      *               that the i-th gradient is probably incorrect.
-     *               <p>
-     *               subprograms called
-     *               <p>
-     *               minpack supplied ... dpmpar
-     *               <p>
-     *               fortran supplied ... dabs,dlog10,dsqrt
+
      * @author argonne national laboratory. minpack project. march 1980.
      * @author burton s. garbow, kenneth e. hillstrom, jorge j. more
-     * <p>
      */
     public static void chkder(int m, int n, double x[], double fvec[], double fjac[],
                 int ldfjac, double xp[], double fvecp[], int mode, double err[]) {

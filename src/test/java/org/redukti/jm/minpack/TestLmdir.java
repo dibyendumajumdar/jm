@@ -3,7 +3,7 @@ package org.redukti.jm.minpack;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TestLmdir implements MinPack.Lmder_function {
+public class TestLmdir implements MinPack.Lmder_Function {
 
     /*      driver for lmder example. */
 

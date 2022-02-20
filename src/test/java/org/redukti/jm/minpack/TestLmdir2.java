@@ -72,7 +72,7 @@ import org.junit.Test;
 
 
 
-public class TestLmdir2 implements MinPack.Lmder_function {
+public class TestLmdir2 implements MinPack.Lmder_Function {
 
 // epsmch is the machine precision
 
